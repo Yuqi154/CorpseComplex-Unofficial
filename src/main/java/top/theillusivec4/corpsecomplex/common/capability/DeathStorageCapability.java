@@ -74,7 +74,7 @@ public class DeathStorageCapability {
         ListTag effects = new ListTag();
         instance.getEffects().forEach(effectInstance -> {
           CompoundTag effect = new CompoundTag();
-          effectInstance.write(effect);
+          effectInstance.save(effect);
           effects.add(effect);
         });
         compound.put(EFFECTS, effects);
