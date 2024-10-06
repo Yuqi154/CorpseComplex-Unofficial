@@ -19,21 +19,22 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.soulbinding;
 
-import javax.annotation.Nonnull;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentType;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.Enchantments;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.registry.RegistryReference;
+
+import javax.annotation.Nonnull;
 
 public class SoulbindingEnchantment extends Enchantment {
 
   public SoulbindingEnchantment() {
-    super(Rarity.VERY_RARE, EnchantmentType.create("ANY", (item) -> true),
-        EquipmentSlotType.values());
+    super(Rarity.VERY_RARE, EnchantmentCategory.create("ANY", (item) -> true),
+            EquipmentSlot.values());
     this.setRegistryName(RegistryReference.SOULBINDING);
   }
 
@@ -50,28 +51,28 @@ public class SoulbindingEnchantment extends Enchantment {
   }
 
   @Override
-  public int getMinEnchantability(int enchantmentLevel) {
+  public int getMinCost(int enchantmentLevel) {
     return 1 + 10 * (enchantmentLevel - 1);
   }
 
   @Override
-  public int getMaxEnchantability(int enchantmentLevel) {
-    return super.getMinEnchantability(enchantmentLevel) + 50;
+  public int getMaxCost(int enchantmentLevel) {
+    return super.getMaxCost(enchantmentLevel) + 50;
   }
 
   @Override
-  protected boolean canApplyTogether(Enchantment ench) {
+  protected boolean checkCompatibility(Enchantment ench) {
     ResourceLocation rl = ench.getRegistryName();
     boolean isSoulbound = false;
 
     if (rl != null) {
       isSoulbound = rl.getPath().equals("soulbound");
     }
-    return !isSoulbound && ench != Enchantments.VANISHING_CURSE && super.canApplyTogether(ench);
+    return !isSoulbound && ench != Enchantments.VANISHING_CURSE && super.checkCompatibility(ench);
   }
 
   @Override
-  public boolean isTreasureEnchantment() {
+  public boolean isTreasureOnly() {
     return CorpseComplexConfig.isTreasure;
   }
 
@@ -81,12 +82,12 @@ public class SoulbindingEnchantment extends Enchantment {
   }
 
   @Override
-  public boolean canVillagerTrade() {
+  public boolean isTradeable() {
     return CorpseComplexConfig.isVillagerTrade;
   }
 
   @Override
-  public boolean canGenerateInLoot() {
+  public boolean isDiscoverable() {
     return CorpseComplexConfig.isLootable;
   }
 

@@ -22,7 +22,7 @@ package top.theillusivec4.corpsecomplex.common.modules.inventory;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import top.theillusivec4.corpsecomplex.common.util.Enums.DropMode;
 import top.theillusivec4.corpsecomplex.common.util.Enums.InventorySection;
 

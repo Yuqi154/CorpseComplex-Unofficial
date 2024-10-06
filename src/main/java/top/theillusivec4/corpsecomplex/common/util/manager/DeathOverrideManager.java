@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.DeathCondition;
 import top.theillusivec4.corpsecomplex.common.DeathOverride;
@@ -86,10 +86,10 @@ public class DeathOverrideManager {
       List<ItemStack> cures = ConfigParser
           .parseItems(override.cures != null ? override.cures : CorpseComplexConfig.cures).keySet()
           .stream().map(ItemStack::new).collect(Collectors.toList());
-      List<EffectInstance> effectsConfig =
+      List<MobEffectInstance> effectsConfig =
           override.effects != null ? ConfigParser.parseEffectInstances(override.effects, cures)
               : null;
-      List<Effect> keepEffectsConfig =
+      List<MobEffect> keepEffectsConfig =
           override.keepEffects != null ? ConfigParser.parseEffects(override.keepEffects) : null;
       EffectsOverride effects = new EffectsOverride.Builder().cures(cures).effects(effectsConfig)
           .keepEffectsMode(override.keepEffectsMode).keepEffects(keepEffectsConfig).build();

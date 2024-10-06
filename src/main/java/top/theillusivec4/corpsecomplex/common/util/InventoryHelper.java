@@ -19,17 +19,14 @@
 
 package top.theillusivec4.corpsecomplex.common.util;
 
-import java.util.Map;
-import java.util.Random;
-import javax.annotation.Nullable;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -38,16 +35,19 @@ import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventorySetting;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventorySetting.SectionSettings;
-import top.theillusivec4.corpsecomplex.common.registry.CorpseComplexRegistry;
 import top.theillusivec4.corpsecomplex.common.util.Enums.DropMode;
 import top.theillusivec4.corpsecomplex.common.util.Enums.InventorySection;
 import top.theillusivec4.corpsecomplex.common.util.manager.ItemOverrideManager;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Random;
 
 public class InventoryHelper {
 
   public static final Random RAND = new Random();
 
-  public static void process(PlayerEntity player, ItemStack stack, int index, ListNBT list,
+  public static void process(Player player, ItemStack stack, int index, ListTag list,
                              InventorySection section, InventorySetting setting) {
     DropMode inventoryRule = getDropModeOverride(stack, setting);
     SectionSettings defaultSettings = setting.getInventorySettings().get(InventorySection.DEFAULT);
@@ -77,9 +77,9 @@ public class InventoryHelper {
           .map(override -> override.getKeepDurabilityLoss().orElse(finalKeepDurabilityLoss))
           .orElse(keepDurabilityLoss);
       applyDurabilityLoss(player, keep, setting, keepDurabilityLoss);
-      CompoundNBT compoundnbt = new CompoundNBT();
+      CompoundTag compoundnbt = new CompoundTag();
       compoundnbt.putInt("Slot", index);
-      keep.write(compoundnbt);
+      keep.save(compoundnbt);
       list.add(compoundnbt);
     }
     double dropDurabilityLoss =
@@ -104,10 +104,10 @@ public class InventoryHelper {
     return setting.getItems().get(stack.getItem());
   }
 
-  public static void applyDurabilityLoss(PlayerEntity playerEntity, ItemStack stack,
+  public static void applyDurabilityLoss(Player playerEntity, ItemStack stack,
                                          InventorySetting setting, double durabilityLoss) {
 
-    if (!stack.isDamageable()) {
+    if (!stack.isDamageableItem()) {
       return;
     }
     LazyOptional<IEnergyStorage> energyStorage = stack.getCapability(CapabilityEnergy.ENERGY);
@@ -118,10 +118,10 @@ public class InventoryHelper {
         energy.extractEnergy(energyLoss, false);
       }
     });
-    int maxLoss = setting.isLimitDurabilityLoss() ? stack.getMaxDamage() - stack.getDamage() - 1
+    int maxLoss = setting.isLimitDurabilityLoss() ? stack.getMaxDamage() - stack.getDamageValue() - 1
         : stack.getMaxDamage();
     int loss = (int) Math.round(stack.getMaxDamage() * durabilityLoss);
-    stack.damageItem(Math.min(maxLoss, loss), playerEntity, damager -> {
+    stack.hurtAndBreak(Math.min(maxLoss, loss), playerEntity, damager -> {
     });
   }
 
@@ -142,7 +142,7 @@ public class InventoryHelper {
     return amount;
   }
 
-  private static final ITag<Enchantment> SOULBOUND = ForgeTagHandler
+  private static final Tag<Enchantment> SOULBOUND = ForgeTagHandler
       .createOptionalTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge:soulbound"));
 
   private static boolean saveSoulbound(ItemStack stack) {

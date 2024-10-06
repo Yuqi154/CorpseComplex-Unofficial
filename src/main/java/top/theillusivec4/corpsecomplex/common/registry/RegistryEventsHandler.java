@@ -21,6 +21,8 @@ package top.theillusivec4.corpsecomplex.common.registry;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Effect;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -37,7 +39,7 @@ public class RegistryEventsHandler {
   }
 
   @SubscribeEvent
-  public static void registerEffects(final RegistryEvent.Register<Effect> evt) {
+  public static void registerEffects(final RegistryEvent.Register<MobEffect> evt) {
     evt.getRegistry().register(new MementoMoriEffect());
   }
 }

@@ -21,24 +21,24 @@ package top.theillusivec4.corpsecomplex.common.util.integration;
 
 import net.minecraftforge.fml.ModList;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventoryModule;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.CosmeticArmorInventory;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.CuriosInventory;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.ToolBeltInventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.CosmeticArmorIInventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.CuriosIInventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration.ToolBeltIInventory;
 
 public class IntegrationManager {
 
   public static void init() {
 
     if (ModList.get().isLoaded("curios")) {
-      InventoryModule.STORAGE.add(new CuriosInventory());
+      InventoryModule.STORAGE.add(new CuriosIInventory());
     }
 
     if (ModList.get().isLoaded("cosmeticarmorreworked")) {
-      InventoryModule.STORAGE.add(new CosmeticArmorInventory());
+      InventoryModule.STORAGE.add(new CosmeticArmorIInventory());
     }
 
     if (ModList.get().isLoaded("toolbelt")) {
-      InventoryModule.STORAGE.add(new ToolBeltInventory());
+      InventoryModule.STORAGE.add(new ToolBeltIInventory());
     }
   }
 }

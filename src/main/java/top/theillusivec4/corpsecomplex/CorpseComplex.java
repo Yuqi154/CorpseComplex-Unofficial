@@ -28,8 +28,8 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.config.ModConfig.ModConfigEvent;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -81,7 +81,7 @@ public class CorpseComplex {
     ModConfig modConfig = evt.getConfig();
 
     if (modConfig.getModId().equals(MODID)) {
-      ForgeConfigSpec spec = modConfig.getSpec();
+      ForgeConfigSpec spec = (ForgeConfigSpec) modConfig.getSpec();
 
       if (modConfig.getType() == Type.SERVER) {
         CorpseComplexConfig.bakeConfigs();

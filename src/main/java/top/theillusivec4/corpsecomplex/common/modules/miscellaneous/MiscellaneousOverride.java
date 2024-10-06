@@ -19,11 +19,12 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.miscellaneous;
 
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
 
 public class MiscellaneousOverride {
 

@@ -25,18 +25,23 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.Inventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.IInventory;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.VanillaInventory;
 
 public class InventoryModule {
 
-  public static final List<Inventory> STORAGE = new ArrayList<>();
+  public static final List<IInventory> STORAGE = new ArrayList<>();
 
   static {
     STORAGE.add(new VanillaInventory());
@@ -45,15 +50,15 @@ public class InventoryModule {
   @SubscribeEvent(priority = EventPriority.LOW)
   public void playerDrops(final LivingDropsEvent evt) {
 
-    if (!(evt.getEntityLiving() instanceof PlayerEntity)) {
+    if (!(evt.getEntity() instanceof Player)) {
       return;
     }
-    PlayerEntity playerEntity = (PlayerEntity) evt.getEntityLiving();
+    Player playerEntity = (Player) evt.getEntity();
     DeathStorageCapability.getCapability(playerEntity).ifPresent(deathStorage -> {
       int despawnTime = deathStorage.getSettings().getInventorySettings().getDropDespawnTime();
 
       if (despawnTime < 1) {
-        evt.getDrops().forEach(ItemEntity::setNoDespawn);
+        evt.getDrops().forEach(ItemEntity::setExtendedLifetime);
       } else {
         evt.getDrops().forEach(itemEntity -> itemEntity.lifespan = despawnTime * 20);
       }
@@ -63,13 +68,13 @@ public class InventoryModule {
   @SubscribeEvent(priority = EventPriority.HIGH)
   public void playerDeath(final LivingDeathEvent evt) {
 
-    if (!(evt.getEntityLiving() instanceof PlayerEntity)) {
+    if (!(evt.getEntity() instanceof Player)) {
       return;
     }
-    PlayerEntity playerEntity = (PlayerEntity) evt.getEntityLiving();
-    World world = playerEntity.getEntityWorld();
+    Player playerEntity = (Player) evt.getEntity();
+    Level world = playerEntity.getCommandSenderWorld();
 
-    if (!world.isRemote() && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+    if (!world.isClientSide && !world.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
       DeathStorageCapability.getCapability(playerEntity).ifPresent(
           deathStorage -> STORAGE.forEach(storage -> storage.storeInventory(deathStorage)));
     }
@@ -78,13 +83,13 @@ public class InventoryModule {
   @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
   public void canceledDeath(final LivingDeathEvent evt) {
 
-    if (!(evt.getEntityLiving() instanceof PlayerEntity) || !evt.isCanceled()) {
+    if (!(evt.getEntity() instanceof Player) || !evt.isCanceled()) {
       return;
     }
-    PlayerEntity playerEntity = (PlayerEntity) evt.getEntityLiving();
-    World world = playerEntity.getEntityWorld();
+    Player playerEntity = (Player) evt.getEntity();
+    Level world = playerEntity.getCommandSenderWorld();
 
-    if (!world.isRemote() && !world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+    if (!world.isClientSide && !world.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
       DeathStorageCapability.getCapability(playerEntity).ifPresent(deathStorage -> {
         STORAGE.forEach(storage -> storage.retrieveInventory(deathStorage, deathStorage));
         deathStorage.clearDeathInventory();
@@ -96,13 +101,13 @@ public class InventoryModule {
   public void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
-      PlayerEntity original = evt.getOriginal();
+      Player original = evt.getOriginal();
       original.revive();
-      DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(
+      DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(
           newStorage -> DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(
               oldStorage -> STORAGE
                   .forEach(storage -> storage.retrieveInventory(newStorage, oldStorage))));
-      original.remove();
+      original.remove(Entity.RemovalReason.KILLED);
     }
   }
 }

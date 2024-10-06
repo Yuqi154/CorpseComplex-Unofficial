@@ -3,24 +3,25 @@ package top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.int
 import dev.gigaherz.toolbelt.BeltFinder;
 import dev.gigaherz.toolbelt.BeltFinderBeltSlot;
 import dev.gigaherz.toolbelt.ConfigData;
-import java.util.Random;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventorySetting;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.Inventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.IInventory;
 import top.theillusivec4.corpsecomplex.common.util.Enums;
 import top.theillusivec4.corpsecomplex.common.util.InventoryHelper;
 
-public class ToolBeltInventory implements Inventory {
+import java.util.Random;
+
+public class ToolBeltIInventory implements IInventory {
 
   @Override
   public void storeInventory(DeathStorageCapability.IDeathStorage deathStorage) {
-    PlayerEntity playerEntity = deathStorage.getPlayer();
+    Player Player = deathStorage.getPlayer();
 
     if (ConfigData.customBeltSlotEnabled) {
-      ItemStack belt = BeltFinder.findBelt(playerEntity).map(BeltFinder.BeltGetter::getBelt)
+      ItemStack belt = BeltFinder.findBelt(Player).map(BeltFinder.BeltGetter::getBelt)
           .orElse(ItemStack.EMPTY);
 
       if (!belt.isEmpty()) {
@@ -60,15 +61,15 @@ public class ToolBeltInventory implements Inventory {
   @Override
   public void retrieveInventory(DeathStorageCapability.IDeathStorage newStorage,
                                 DeathStorageCapability.IDeathStorage oldStorage) {
-    PlayerEntity player = newStorage.getPlayer();
-    PlayerEntity oldPlayer = oldStorage.getPlayer();
+    Player player = newStorage.getPlayer();
+    Player oldPlayer = oldStorage.getPlayer();
 
     if (player != null && oldPlayer != null) {
-      CompoundNBT tag = (CompoundNBT) oldStorage.getInventory("tool_belt");
+      CompoundTag tag = (CompoundTag) oldStorage.getInventory("tool_belt");
 
       if (tag != null) {
-        ItemStack stack = ItemStack.read(tag);
-        BeltFinder.setFinderSlotContents(player, BeltFinderBeltSlot.FINDER_ID, 0, stack);
+        ItemStack stack = ItemStack.of(tag);
+        BeltFinder.setBeltFromPacket(player, BeltFinderBeltSlot.FINDER_ID, 0, stack);
       }
     }
   }

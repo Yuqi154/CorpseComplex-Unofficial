@@ -19,25 +19,26 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.mementomori;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import javax.annotation.Nonnull;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.entity.ai.attributes.AttributeModifierManager;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.registry.CorpseComplexRegistry;
 import top.theillusivec4.corpsecomplex.common.registry.RegistryReference;
 
-public class MementoMoriEffect extends Effect {
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+
+public class MementoMoriEffect extends MobEffect {
 
   private static final double INT_CHANGE = 1.0D;
   private static final double PERCENT_CHANGE = 0.05D;
@@ -46,28 +47,28 @@ public class MementoMoriEffect extends Effect {
   public static final Map<Attribute, AttributeInfo> ATTRIBUTES = new HashMap<>();
 
   public MementoMoriEffect() {
-    super(EffectType.HARMFUL, 0);
+    super(MobEffectCategory.HARMFUL, 0);
     this.setRegistryName(RegistryReference.MEMENTO_MORI);
   }
 
   @Override
-  public void performEffect(@Nonnull LivingEntity entityLivingBaseIn, int amplifier) {
-    EffectInstance effect = entityLivingBaseIn
-        .getActivePotionEffect(CorpseComplexRegistry.MEMENTO_MORI);
+  public void applyEffectTick(@Nonnull LivingEntity entityLivingBaseIn, int amplifier) {
+    MobEffectInstance effect = entityLivingBaseIn
+        .getEffect(CorpseComplexRegistry.MEMENTO_MORI);
 
     if (effect != null) {
       int duration = effect.getDuration();
       ATTRIBUTES.forEach((attribute, info) -> {
 
         if (info.modifier.getAmount() != 0 && duration % info.tick == 0) {
-          ModifiableAttributeInstance instance = entityLivingBaseIn.getAttribute(attribute);
+          AttributeInstance instance = entityLivingBaseIn.getAttribute(attribute);
 
           if (instance != null) {
-            AttributeModifier modifier = instance.getModifier(info.modifier.getID());
+            AttributeModifier modifier = instance.getModifier(info.modifier.getId());
 
             if (modifier != null) {
               instance.removeModifier(modifier);
-              instance.applyNonPersistentModifier(new AttributeModifier(modifier.getID(), modifier.getName(),
+              instance.addTransientModifier(new AttributeModifier(modifier.getId(), modifier.getName(),
                   modifier.getAmount() + info.tickAmount, modifier.getOperation()));
             }
           }
@@ -81,7 +82,7 @@ public class MementoMoriEffect extends Effect {
   }
 
   @Override
-  public boolean isReady(int duration, int amplifier) {
+  public boolean isDurationEffectTick(int duration, int amplifier) {
     return duration < CorpseComplexConfig.SERVER.duration.get() * 20
         && CorpseComplexConfig.SERVER.gradualRecovery.get() && isChangeTick(duration);
   }
@@ -96,16 +97,16 @@ public class MementoMoriEffect extends Effect {
   }
 
   @Override
-  public void removeAttributesModifiersFromEntity(LivingEntity entityLivingBaseIn,
-      @Nonnull AttributeModifierManager attributeMapIn, int amplifier) {
+  public void removeAttributeModifiers(LivingEntity entityLivingBaseIn,
+                                                  @Nonnull AttributeMap attributeMapIn, int amplifier) {
 
     for (Entry<Attribute, AttributeInfo> attribute : ATTRIBUTES.entrySet()) {
-      ModifiableAttributeInstance iattributeinstance = attributeMapIn
-          .createInstanceIfAbsent(attribute.getKey());
+      AttributeInstance iattributeinstance = attributeMapIn
+          .getInstance(attribute.getKey());
 
       if (iattributeinstance != null) {
         AttributeModifier modifier = iattributeinstance
-            .getModifier(attribute.getValue().modifier.getID());
+            .getModifier(attribute.getValue().modifier.getId());
 
         if (modifier != null) {
           iattributeinstance.removeModifier(modifier);
@@ -115,18 +116,18 @@ public class MementoMoriEffect extends Effect {
   }
 
   @Override
-  public void applyAttributesModifiersToEntity(LivingEntity entityLivingBaseIn,
-      @Nonnull AttributeModifierManager attributeMapIn, int amplifier) {
+  public void addAttributeModifiers(LivingEntity entityLivingBaseIn,
+      @Nonnull AttributeMap attributeMapIn, int amplifier) {
 
     for (Entry<Attribute, AttributeInfo> attribute : ATTRIBUTES.entrySet()) {
-      ModifiableAttributeInstance iattributeinstance = attributeMapIn
-          .createInstanceIfAbsent(attribute.getKey());
+      AttributeInstance iattributeinstance = attributeMapIn
+          .getInstance(attribute.getKey());
 
       if (iattributeinstance != null) {
         AttributeModifier attributemodifier = attribute.getValue().modifier;
         iattributeinstance.removeModifier(attributemodifier);
-        iattributeinstance.applyNonPersistentModifier(
-            new AttributeModifier(attributemodifier.getID(), NAME, attributemodifier.getAmount(),
+        iattributeinstance.addTransientModifier(
+            new AttributeModifier(attributemodifier.getId(), NAME, attributemodifier.getAmount(),
                 attributemodifier.getOperation()));
       }
     }

@@ -31,9 +31,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.Tag;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -109,7 +111,7 @@ public class DeathStorageCapability {
 
   public interface IDeathStorage {
 
-    PlayerEntity getPlayer();
+    Player getPlayer();
 
     void buildSettings();
 
@@ -119,9 +121,9 @@ public class DeathStorageCapability {
 
     DeathInfo getDeathInfo();
 
-    void addInventory(String modid, INBT nbt);
+    void addInventory(String modid, Tag nbt);
 
-    INBT getInventory(String modid);
+    Tag getInventory(String modid);
 
     Map<String, INBT> getDeathInventory();
 

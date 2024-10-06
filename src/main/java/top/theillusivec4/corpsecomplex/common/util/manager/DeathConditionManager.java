@@ -28,8 +28,11 @@ import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.DeathCondition;
@@ -55,10 +58,10 @@ public class DeathConditionManager {
         return false;
       }
     }
-    PlayerEntity playerEntity = deathStorage.getPlayer();
+    Player playerEntity = deathStorage.getPlayer();
     Optional<List<String>> playersOpt = deathCondition.getPlayers();
     String name = playerEntity.getName().getString();
-    String uuid = playerEntity.getUniqueID().toString();
+    String uuid = playerEntity.getUUID().toString();
     boolean matchesPlayer = playersOpt.map(
         players -> players.stream().anyMatch(player -> name.equals(player) || uuid.equals(player)))
         .orElse(true);
@@ -68,7 +71,7 @@ public class DeathConditionManager {
     }
     Optional<Difficulty> difficultyOpt = deathCondition.getDifficulty();
     boolean matchesDifficulty = difficultyOpt
-        .map(difficulty -> playerEntity.getEntityWorld().getDifficulty() == difficulty)
+        .map(difficulty -> playerEntity.getCommandSenderWorld().getDifficulty() == difficulty)
         .orElse(true);
 
     if (!matchesDifficulty) {
@@ -144,6 +147,6 @@ public class DeathConditionManager {
   }
 
   public static EntityType<?> getEntityType(@Nullable String name) {
-    return name == null ? null : ForgeRegistries.ENTITIES.getValue(new ResourceLocation(name));
+    return name == null ? null : ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(name));
   }
 }

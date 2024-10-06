@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.common.util.Enums;
 import top.theillusivec4.corpsecomplex.common.util.Enums.DropMode;
@@ -39,7 +39,7 @@ public class ConfigParser {
   public static List<EntityType<?>> parseMobs(@Nonnull List<? extends String> configList) {
     List<EntityType<?>> list = new ArrayList<>();
     configList.forEach(mob -> {
-      EntityType<?> entity = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(mob));
+      EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(mob));
 
       if (entity != null) {
         list.add(entity);
@@ -89,10 +89,10 @@ public class ConfigParser {
     return map;
   }
 
-  public static List<Effect> parseEffects(@Nonnull List<? extends String> configList) {
-    List<Effect> list = new ArrayList<>();
+  public static List<MobEffect> parseEffects(@Nonnull List<? extends String> configList) {
+    List<MobEffect> list = new ArrayList<>();
     configList.forEach(effect -> {
-      Effect effect1 = ForgeRegistries.POTIONS.getValue(new ResourceLocation(effect));
+      MobEffect effect1 = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(effect));
 
       if (effect1 != null) {
         list.add(effect1);
@@ -101,18 +101,18 @@ public class ConfigParser {
     return list;
   }
 
-  public static List<EffectInstance> parseEffectInstances(
+  public static List<MobEffectInstance> parseMobEffectInstances(
       @Nonnull List<? extends String> configList, @Nonnull List<ItemStack> cures) {
-    List<EffectInstance> list = new ArrayList<>();
+    List<MobEffectInstance> list = new ArrayList<>();
     configList.forEach(instance -> {
       String[] parse = instance.split(";");
 
       if (parse.length >= 2) {
-        Effect effect1 = ForgeRegistries.POTIONS.getValue(new ResourceLocation(parse[0]));
+        MobEffect effect1 = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(parse[0]));
 
         if (effect1 != null) {
           int amplifier = parse.length >= 3 ? Integer.parseInt(parse[2]) : 0;
-          EffectInstance instance1 = new EffectInstance(effect1, Integer.parseInt(parse[1]) * 20,
+          MobEffectInstance instance1 = new MobEffectInstance(effect1, Integer.parseInt(parse[1]) * 20,
               amplifier);
 
           if (parse.length >= 4) {

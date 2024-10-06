@@ -19,16 +19,15 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.miscellaneous;
 
-import java.util.Objects;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
@@ -37,13 +36,15 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 
+import java.util.Objects;
+
 public class MiscellaneousModule {
 
   @SubscribeEvent
   public void setSpawn(final PlayerSetSpawnEvent evt) {
 
-    if (!evt.getPlayer().getEntityWorld().isRemote) {
-      DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(deathStorage -> {
+    if (!evt.getEntity().getCommandSenderWorld().isClientSide) {
+      DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
         if (deathStorage.getSettings().getMiscellaneousSettings().isRestrictRespawning()) {
           evt.setCanceled(true);
         }
@@ -53,11 +54,11 @@ public class MiscellaneousModule {
 
   @SubscribeEvent
   public void playerRespawn(final PlayerRespawnEvent evt) {
-    PlayerEntity player = evt.getPlayer();
+    Player player = evt.getEntity();
 
     DeathStorageCapability.getCapability(player).ifPresent(
         deathStorage -> deathStorage.getSettings().getMiscellaneousSettings().getRespawnItems()
-            .forEach(item -> ItemHandlerHelper.giveItemToPlayer(evt.getPlayer(), item.copy())));
+            .forEach(item -> ItemHandlerHelper.giveItemToPlayer(evt.getEntity(), item.copy())));
 
     if (CorpseComplexConfig.respawnHealth > 0) {
       player.setHealth((float) CorpseComplexConfig.respawnHealth);
@@ -67,58 +68,58 @@ public class MiscellaneousModule {
   @SubscribeEvent
   public void playerDeath(final LivingDeathEvent evt) {
 
-    if (!(evt.getEntityLiving() instanceof PlayerEntity)) {
+    if (!(evt.getEntity() instanceof Player)) {
       return;
     }
-    PlayerEntity playerEntity = (PlayerEntity) evt.getEntityLiving();
-    World world = playerEntity.world;
+    Player playerEntity = (Player) evt.getEntity();
+    Level world = playerEntity.level();
 
-    if (!world.isRemote()) {
+    if (!world.isClientSide) {
       DeathStorageCapability.getCapability(playerEntity).ifPresent(
           deathStorage -> deathStorage.getSettings().getMiscellaneousSettings()
               .getMobSpawnsOnDeath()
-              .forEach(mob -> spawnMob(mob, playerEntity.getPosition(), world)));
+              .forEach(mob -> spawnMob(mob, playerEntity.getPosition(1f), world)));
     }
   }
 
-  private static void spawnMob(EntityType<?> type, BlockPos blockPos, World world) {
+  private static void spawnMob(EntityType<?> type, BlockPos blockPos, Level world) {
     double d0 =
-        (double) blockPos.getX() + (world.rand.nextDouble() - world.rand.nextDouble()) * 4 + 0.5D;
-    double d1 = (blockPos.getY() + world.rand.nextInt(3) - 1);
+        (double) blockPos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * 4 + 0.5D;
+    double d1 = (blockPos.getY() + world.random.nextInt(3) - 1);
     double d2 =
-        (double) blockPos.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * 4 + 0.5D;
+        (double) blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * 4 + 0.5D;
 
-    if (world.hasNoCollisions(type.getBoundingBoxWithSizeApplied(d0, d1, d2))) {
-      CompoundNBT compoundnbt = new CompoundNBT();
+    if (world.noCollision(type.getAABB(d0, d1, d2))) {
+      CompoundTag compoundnbt = new CompoundTag();
       compoundnbt.putString("id", Objects.requireNonNull(type.getRegistryName()).toString());
-      Entity entity = EntityType.loadEntityAndExecute(compoundnbt, world, (entity1) -> {
-        entity1.setLocationAndAngles(d0, d1, d2, entity1.rotationYaw, entity1.rotationPitch);
+        Entity entity = EntityType.loadEntityRecursive(compoundnbt, world, (entity1) -> {
+        entity1.moveTo(d0, d1, d2, entity1.yRotO, entity1.xRotO);
         return entity1;
       });
 
       if (entity != null) {
-        entity.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(),
-            world.rand.nextFloat() * 360.0F, 0.0F);
+        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(),
+            world.random.nextFloat() * 360.0F, 0.0F);
 
-        if (entity instanceof MobEntity && world instanceof ServerWorld) {
-          ((MobEntity) entity).onInitialSpawn((ServerWorld) world,
-              world.getDifficultyForLocation(entity.getPosition()), SpawnReason.TRIGGERED, null,
+        if (entity instanceof Mob && world instanceof ServerLevel) {
+          ((Mob) entity).finalizeSpawn((ServerLevel) world,
+              world.getCurrentDifficultyAt(BlockPos.containing(entity.getPosition(1))), MobSpawnType.TRIGGERED, null,
               null);
         }
         addEntity(entity, world);
-        world.playEvent(2004, blockPos, 0);
+        world.levelEvent(2004, blockPos, 0);
 
-        if (entity instanceof MobEntity) {
-          ((MobEntity) entity).spawnExplosionParticle();
-          ((MobEntity) entity).enablePersistence();
+        if (entity instanceof Mob) {
+          ((Mob) entity).spawnAnim();
+          ((Mob) entity).setPersistenceRequired();
         }
       }
     }
   }
 
-  private static void addEntity(Entity entity, World world) {
+  private static void addEntity(Entity entity, Level world) {
 
-    if (world.addEntity(entity)) {
+    if (world.addFreshEntity(entity)) {
 
       for (Entity entity1 : entity.getPassengers()) {
         addEntity(entity1, world);

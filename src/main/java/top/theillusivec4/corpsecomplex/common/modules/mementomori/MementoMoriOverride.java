@@ -19,10 +19,11 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.mementomori;
 
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import net.minecraft.item.ItemStack;
 
 public class MementoMoriOverride {
 

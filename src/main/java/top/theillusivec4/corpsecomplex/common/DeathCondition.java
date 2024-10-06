@@ -22,9 +22,9 @@ package top.theillusivec4.corpsecomplex.common;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntityType;
 
 public class DeathCondition {
 

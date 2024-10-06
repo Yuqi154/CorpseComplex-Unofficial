@@ -24,7 +24,7 @@ import com.electronwill.nightconfig.core.conversion.ObjectConverter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.enchantment.Enchantment.Rarity;
+import net.minecraft.world.item.enchantment.Enchantment.Rarity;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;

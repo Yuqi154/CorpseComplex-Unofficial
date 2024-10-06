@@ -22,7 +22,7 @@ package top.theillusivec4.corpsecomplex.common.modules.inventory;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import top.theillusivec4.corpsecomplex.common.config.ConfigParser;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.modules.Setting;

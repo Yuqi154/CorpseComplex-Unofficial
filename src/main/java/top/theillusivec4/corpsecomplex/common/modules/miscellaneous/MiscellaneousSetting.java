@@ -21,8 +21,8 @@ package top.theillusivec4.corpsecomplex.common.modules.miscellaneous;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.corpsecomplex.common.modules.Setting;
 import top.theillusivec4.corpsecomplex.common.config.ConfigParser;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;

@@ -19,50 +19,51 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.integration;
 
-import java.util.Map;
-import java.util.UUID;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability.IDeathStorage;
-import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.Inventory;
+import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.IInventory;
 import top.theillusivec4.corpsecomplex.common.util.Enums.InventorySection;
 import top.theillusivec4.corpsecomplex.common.util.InventoryHelper;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
-public class CuriosInventory implements Inventory {
+import java.util.Map;
+import java.util.UUID;
+
+public class CuriosIInventory implements IInventory {
 
   @Override
   public void storeInventory(IDeathStorage deathStorage) {
-    PlayerEntity playerEntity = deathStorage.getPlayer();
-    ListNBT list = new ListNBT();
-    CuriosApi.getCuriosHelper().getCuriosHandler(playerEntity)
+    Player Player = deathStorage.getPlayer();
+    ListTag list = new ListTag();
+    CuriosApi.getCuriosHelper().getCuriosHandler(Player)
         .ifPresent(curioHandler -> curioHandler.getCurios().forEach((id, stackHandler) -> {
-          ListNBT list1 = new ListNBT();
-          ListNBT list2 = new ListNBT();
+          ListTag list1 = new ListTag();
+          ListTag list2 = new ListTag();
 
           for (int i = 0; i < stackHandler.getSlots(); i++) {
-            InventoryHelper.process((PlayerEntity) curioHandler.getWearer(),
+            InventoryHelper.process((Player) curioHandler.getWearer(),
                 stackHandler.getStacks().getStackInSlot(i), i, list1, InventorySection.CURIOS,
                 deathStorage.getSettings().getInventorySettings());
-            InventoryHelper.process((PlayerEntity) curioHandler.getWearer(),
+            InventoryHelper.process((Player) curioHandler.getWearer(),
                 stackHandler.getCosmeticStacks().getStackInSlot(i), i, list2,
                 InventorySection.CURIOS, deathStorage.getSettings().getInventorySettings());
           }
-          CompoundNBT tag = new CompoundNBT();
+          CompoundTag tag = new CompoundTag();
           tag.putString("Identifier", id);
           tag.put("Stacks", list1);
           tag.put("CosmeticStacks", list2);
-          ListNBT modifiers = new ListNBT();
+          ListTag modifiers = new ListTag();
 
           for (Map.Entry<UUID, AttributeModifier> entry : stackHandler.getModifiers().entrySet()) {
-            CompoundNBT mod = new CompoundNBT();
-            mod.put("Modifier", entry.getValue().write());
+            CompoundTag mod = new CompoundTag();
+            mod.put("Modifier", entry.getValue().save());
             modifiers.add(mod);
           }
           tag.put("Modifiers", modifiers);
@@ -73,35 +74,35 @@ public class CuriosInventory implements Inventory {
 
   @Override
   public void retrieveInventory(IDeathStorage newStorage, IDeathStorage oldStorage) {
-    PlayerEntity player = newStorage.getPlayer();
-    PlayerEntity oldPlayer = oldStorage.getPlayer();
+    Player player = newStorage.getPlayer();
+    Player oldPlayer = oldStorage.getPlayer();
 
     if (player != null && oldPlayer != null) {
-      ListNBT list = (ListNBT) oldStorage.getInventory("curios");
+      ListTag list = (ListTag) oldStorage.getInventory("curios");
 
       if (list != null) {
         CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(newHandler -> {
 
           for (int i = 0; i < list.size(); i++) {
-            CompoundNBT tag = list.getCompound(i);
+            CompoundTag tag = list.getCompound(i);
             String id = tag.getString("Identifier");
             newHandler.getStacksHandler(id).ifPresent(stacksHandler -> {
-              ListNBT modifiers = tag.getList("Modifiers", NBT.TAG_COMPOUND);
+              ListTag modifiers = tag.getList("Modifiers", Tag.TAG_COMPOUND);
 
               for (int i1 = 0; i1 < modifiers.size(); i1++) {
-                CompoundNBT mod = modifiers.getCompound(i1);
+                CompoundTag mod = modifiers.getCompound(i1);
                 AttributeModifier attributeModifier =
-                    AttributeModifier.read(mod.getCompound("Modifier"));
+                    AttributeModifier.load(mod.getCompound("Modifier"));
                 stacksHandler.getCachedModifiers().add(attributeModifier);
                 stacksHandler.addTransientModifier(attributeModifier);
               }
               stacksHandler.update();
-              ListNBT stacks = tag.getList("Stacks", NBT.TAG_COMPOUND);
+              ListTag stacks = tag.getList("Stacks", Tag.TAG_COMPOUND);
 
               for (int j = 0; j < stacks.size(); j++) {
-                CompoundNBT compoundnbt = stacks.getCompound(j);
-                int slot = compoundnbt.getInt("Slot");
-                ItemStack itemstack = ItemStack.read(compoundnbt);
+                CompoundTag CompoundTag = stacks.getCompound(j);
+                int slot = CompoundTag.getInt("Slot");
+                ItemStack itemstack = ItemStack.of(CompoundTag);
 
                 if (!itemstack.isEmpty()) {
                   IDynamicStackHandler stackHandler = stacksHandler.getStacks();
@@ -110,8 +111,8 @@ public class CuriosInventory implements Inventory {
                       stackHandler.getStackInSlot(slot).isEmpty()) {
                     stacksHandler.getStacks().setStackInSlot(slot, itemstack);
                     CuriosApi.getCuriosHelper().getCurio(itemstack).ifPresent((curio) -> {
-                      player.getAttributeManager()
-                          .reapplyModifiers(curio.getAttributeModifiers(id));
+                      player.getAttributes()
+                          .addTransientAttributeModifiers(curio.getAttributeModifiers(id));
                       curio.onEquip(id, slot, player);
                     });
                   } else {
@@ -119,12 +120,12 @@ public class CuriosInventory implements Inventory {
                   }
                 }
               }
-              ListNBT cosmeticStacks = tag.getList("CosmeticStacks", NBT.TAG_COMPOUND);
+              ListTag cosmeticStacks = tag.getList("CosmeticStacks", Tag.TAG_COMPOUND);
 
               for (int j = 0; j < cosmeticStacks.size(); j++) {
-                CompoundNBT compoundnbt = stacks.getCompound(j);
-                int slot = compoundnbt.getInt("Slot");
-                ItemStack itemstack = ItemStack.read(compoundnbt);
+                CompoundTag CompoundTag = stacks.getCompound(j);
+                int slot = CompoundTag.getInt("Slot");
+                ItemStack itemstack = ItemStack.of(CompoundTag);
 
                 if (!itemstack.isEmpty()) {
                   IDynamicStackHandler stackHandler = stacksHandler.getCosmeticStacks();

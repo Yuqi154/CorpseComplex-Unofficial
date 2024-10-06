@@ -21,7 +21,7 @@ package top.theillusivec4.corpsecomplex.common.modules.inventory.inventories;
 
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability.IDeathStorage;
 
-public interface Inventory {
+public interface IInventory {
 
   void storeInventory(IDeathStorage deathStorage);
 

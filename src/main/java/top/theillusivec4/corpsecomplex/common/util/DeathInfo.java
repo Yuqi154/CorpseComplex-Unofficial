@@ -19,19 +19,20 @@
 
 package top.theillusivec4.corpsecomplex.common.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.registries.ForgeRegistries;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeathInfo {
 
@@ -50,16 +51,16 @@ public class DeathInfo {
   public DeathInfo() {
   }
 
-  public DeathInfo(DamageSource source, World world, @Nonnull List<String> gameStages) {
-    this.damageType = source.getDamageType();
+  public DeathInfo(DamageSource source, Level world, @Nonnull List<String> gameStages) {
+    this.damageType = source.getMsgId();
     this.isFireDamage = source.isFireDamage();
     this.isMagicDamage = source.isMagicDamage();
     this.isExplosion = source.isExplosion();
     this.isProjectile = source.isProjectile();
     this.immediateSource =
-        source.getImmediateSource() != null ? source.getImmediateSource().getType() : null;
-    this.trueSource = source.getTrueSource() != null ? source.getTrueSource().getType() : null;
-    this.dimension = world.getDimensionKey().getRegistryName();
+        source.getDirectEntity() != null ? source.getDirectEntity().getType() : null;
+    this.trueSource = source.getEntity() != null ? source.getEntity().getType() : null;
+    this.dimension = world.dimension().registry();
     this.gameStages = gameStages;
   }
 
@@ -101,8 +102,8 @@ public class DeathInfo {
     return gameStages;
   }
 
-  public CompoundNBT write(CompoundNBT compoundNBT) {
-    CompoundNBT tag = new CompoundNBT();
+  public CompoundTag write(CompoundTag compoundNBT) {
+    CompoundTag tag = new CompoundTag();
     tag.putString("DamageType", this.damageType);
     tag.putBoolean("FireDamage", this.isFireDamage);
     tag.putBoolean("MagicDamage", this.isMagicDamage);
@@ -115,31 +116,31 @@ public class DeathInfo {
       tag.putString("TrueSource", this.trueSource.getRegistryName().toString());
     }
     tag.putString("Dimension", this.dimension.toString());
-    ListNBT list = new ListNBT();
-    this.gameStages.forEach(stage -> list.add(StringNBT.valueOf(stage)));
+    ListTag list = new ListTag();
+    this.gameStages.forEach(stage -> list.add(StringTag.valueOf(stage)));
     tag.put("GameStages", list);
     compoundNBT.put("DeathDamageSource", tag);
     return compoundNBT;
   }
 
-  public void read(CompoundNBT compoundNBT) {
-    CompoundNBT tag = compoundNBT.getCompound("DeathDamageSource");
+  public void read(CompoundTag compoundNBT) {
+    CompoundTag tag = compoundNBT.getCompound("DeathDamageSource");
     this.damageType = tag.getString("DamageType");
     this.isFireDamage = tag.getBoolean("FireDamage");
     this.isMagicDamage = tag.getBoolean("MagicDamage");
     this.isExplosion = tag.getBoolean("Explosion");
     this.isProjectile = tag.getBoolean("Projectile");
     if (tag.contains("ImmediateSource")) {
-      this.immediateSource = ForgeRegistries.ENTITIES
+      this.immediateSource = ForgeRegistries.ENTITY_TYPES
           .getValue(new ResourceLocation(tag.getString("ImmediateSource")));
     }
     if (tag.contains("TrueSource")) {
-      this.trueSource = ForgeRegistries.ENTITIES
+      this.trueSource = ForgeRegistries.ENTITY_TYPES
           .getValue(new ResourceLocation(tag.getString("TrueSource")));
     }
     this.dimension = new ResourceLocation(tag.getString("Dimension"));
     this.gameStages = new ArrayList<>();
-    ListNBT list = tag.getList("GameStages", NBT.TAG_STRING);
-    list.forEach(stage -> this.gameStages.add(stage.getString()));
+    ListTag list = tag.getList("GameStages", Tag.TAG_STRING);
+    list.forEach(stage -> this.gameStages.add(stage.getAsString()));
   }
 }

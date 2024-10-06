@@ -22,8 +22,9 @@ package top.theillusivec4.corpsecomplex.common.util.manager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.ItemOverride;

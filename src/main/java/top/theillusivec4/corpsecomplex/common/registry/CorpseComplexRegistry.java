@@ -19,8 +19,8 @@
 
 package top.theillusivec4.corpsecomplex.common.registry;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.potion.Effect;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.ObjectHolder;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 
@@ -28,7 +28,7 @@ import top.theillusivec4.corpsecomplex.CorpseComplex;
 public class CorpseComplexRegistry {
 
   @ObjectHolder(RegistryReference.MEMENTO_MORI)
-  public static final Effect MEMENTO_MORI;
+  public static final MobEffect MEMENTO_MORI;
 
   @ObjectHolder(RegistryReference.SOULBINDING)
   public static final Enchantment SOULBINDING;
