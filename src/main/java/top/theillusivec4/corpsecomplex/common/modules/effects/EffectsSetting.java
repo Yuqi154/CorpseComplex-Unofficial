@@ -19,22 +19,23 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.effects;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import top.theillusivec4.corpsecomplex.common.modules.Setting;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.corpsecomplex.common.config.ConfigParser;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
+import top.theillusivec4.corpsecomplex.common.modules.Setting;
 import top.theillusivec4.corpsecomplex.common.util.Enums.PermissionMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EffectsSetting implements Setting<EffectsOverride> {
 
   private List<ItemStack> cures = new ArrayList<>();
-  private List<EffectInstance> effects = new ArrayList<>();
+  private List<MobEffectInstance> effects = new ArrayList<>();
   private PermissionMode keepEffectsMode;
-  private List<Effect> keepEffects = new ArrayList<>();
+  private List<MobEffect> keepEffects = new ArrayList<>();
 
   public List<ItemStack> getCures() {
     return cures;
@@ -44,11 +45,11 @@ public class EffectsSetting implements Setting<EffectsOverride> {
     this.cures = cures;
   }
 
-  public List<EffectInstance> getEffects() {
+  public List<MobEffectInstance> getEffects() {
     return effects;
   }
 
-  public void setEffects(List<EffectInstance> effects) {
+  public void setEffects(List<MobEffectInstance> effects) {
     this.effects = effects;
   }
 
@@ -60,11 +61,11 @@ public class EffectsSetting implements Setting<EffectsOverride> {
     this.keepEffectsMode = keepEffectsMode;
   }
 
-  public List<Effect> getKeepEffects() {
+  public List<MobEffect> getKeepEffects() {
     return keepEffects;
   }
 
-  public void setKeepEffects(List<Effect> keepEffects) {
+  public void setKeepEffects(List<MobEffect> keepEffects) {
     this.keepEffects = keepEffects;
   }
 
@@ -75,7 +76,7 @@ public class EffectsSetting implements Setting<EffectsOverride> {
     ConfigParser.parseItems(CorpseComplexConfig.cures).keySet()
         .forEach(item -> this.getCures().add(new ItemStack(item)));
     this.setEffects(
-        ConfigParser.parseEffectInstances(CorpseComplexConfig.effects, this.getCures()));
+        ConfigParser.parseMobEffectInstances(CorpseComplexConfig.effects, this.getCures()));
   }
 
   @Override

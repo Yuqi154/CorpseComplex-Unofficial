@@ -19,7 +19,7 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.experience;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,8 +32,8 @@ public class ExperienceModule {
   @SubscribeEvent
   public void playerXpDrop(final LivingExperienceDropEvent evt) {
 
-    if (evt.getEntityLiving() instanceof PlayerEntity) {
-      PlayerEntity player = (PlayerEntity) evt.getEntityLiving();
+    if (evt.getEntity() instanceof Player) {
+      Player player = (Player) evt.getEntity();
       DeathStorageCapability.getCapability(player).ifPresent(deathStorage -> {
         double lose = deathStorage.getSettings().getExperienceSettings().getLostXp();
 
@@ -45,8 +45,8 @@ public class ExperienceModule {
         int level = player.experienceLevel;
         int lostPoints = (int) (lose * totalPoints);
         int keptXp = totalPoints - lostPoints;
-        player.experience = 0;
-        player.experienceTotal = 0;
+        player.experienceProgress = 0;
+        player.totalExperience = 0;
         player.experienceLevel = 0;
         player.giveExperiencePoints(keptXp);
         int lostLevels = level - player.experienceLevel;
@@ -60,13 +60,13 @@ public class ExperienceModule {
   public void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
-      PlayerEntity playerEntity = evt.getPlayer();
+      Player playerEntity = evt.getOriginal();
       DeathStorageCapability.getCapability(playerEntity).ifPresent(deathStorage -> {
-        PlayerEntity original = evt.getOriginal();
+        Player original = evt.getOriginal();
         if (deathStorage.getSettings().getExperienceSettings().getLostXp() < 1) {
-          playerEntity.experience = original.experience;
+          playerEntity.experienceProgress = original.experienceProgress;
           playerEntity.experienceLevel = original.experienceLevel;
-          playerEntity.experienceTotal = original.experienceTotal;
+          playerEntity.totalExperience = original.totalExperience;
         }
       });
     }
@@ -98,12 +98,12 @@ public class ExperienceModule {
     return levels;
   }
 
-  private static int getExperiencePoints(PlayerEntity player) {
-    int points = Math.round(player.xpBarCap() * player.experience);
+  private static int getExperiencePoints(Player player) {
+    int points = Math.round(player.getXpNeededForNextLevel() * player.experienceProgress);
     return points + getExperiencePointsFromLevel(player.experienceLevel);
   }
 
-  private static int getDroppedExperiencePoints(PlayerEntity player, int lostLevels, int lostPoints,
+  private static int getDroppedExperiencePoints(Player player, int lostLevels, int lostPoints,
                                                 IDeathStorage deathStorage) {
 
     if (!player.isSpectator()) {

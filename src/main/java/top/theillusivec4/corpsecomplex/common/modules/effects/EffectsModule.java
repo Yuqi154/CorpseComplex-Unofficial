@@ -19,13 +19,12 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.effects;
 
-import java.util.List;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -34,17 +33,19 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.util.Enums.PermissionMode;
 
+import java.util.List;
+
 public class EffectsModule {
 
   @SubscribeEvent
   public void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
-    LivingEntity entity = evt.getEntityLiving();
+    LivingEntity entity = evt.getEntity();
 
-    if (!entity.getEntityWorld().isRemote() && entity instanceof PlayerEntity) {
-      DeathStorageCapability.getCapability((PlayerEntity) entity).ifPresent(
+    if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player) {
+      DeathStorageCapability.getCapability((Player) entity).ifPresent(
           deathStorage -> deathStorage.getSettings().getEffectsSettings().getCures()
               .forEach(itemStack -> {
-                if (ItemStack.areItemsEqual(evt.getItem(), itemStack)) {
+                if (ItemStack.isSameItemSameTags(evt.getItem(), itemStack)) {
                   entity.curePotionEffects(evt.getItem());
                 }
               }));
@@ -54,23 +55,23 @@ public class EffectsModule {
   @SubscribeEvent
   public void playerDeath(final LivingDeathEvent evt) {
 
-    if (!(evt.getEntityLiving() instanceof PlayerEntity)) {
+    if (!(evt.getEntity() instanceof Player)) {
       return;
     }
-    PlayerEntity playerEntity = (PlayerEntity) evt.getEntityLiving();
-    World world = playerEntity.getEntityWorld();
+    Player playerEntity = (Player) evt.getEntity();
+    Level world = playerEntity.getCommandSenderWorld();
 
-    if (!world.isRemote()) {
+    if (!world.isClientSide) {
       DeathStorageCapability.getCapability(playerEntity).ifPresent(
-          deathStorage -> playerEntity.getActivePotionEffects().forEach(effectInstance -> {
+          deathStorage -> playerEntity.getActiveEffects().forEach(effectInstance -> {
             boolean flag;
             EffectsSetting setting = deathStorage.getSettings().getEffectsSettings();
-            List<Effect> keepEffects = setting.getKeepEffects();
+            List<MobEffect> keepEffects = setting.getKeepEffects();
 
             if (setting.getKeepEffectsMode() == PermissionMode.BLACKLIST) {
-              flag = !keepEffects.contains(effectInstance.getPotion());
+              flag = !keepEffects.contains(effectInstance.getEffect());
             } else {
-              flag = keepEffects.contains(effectInstance.getPotion());
+              flag = keepEffects.contains(effectInstance.getEffect());
             }
 
             if (flag) {
@@ -84,7 +85,7 @@ public class EffectsModule {
   public void playerClone(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
-      DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(
+      DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(
           deathStorage -> DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(
               oldDeathStorage -> oldDeathStorage.getEffects()
                   .forEach(deathStorage::addEffectInstance)));
@@ -95,15 +96,15 @@ public class EffectsModule {
   public void playerRespawn(final PlayerRespawnEvent evt) {
 
     if (!evt.isEndConquered()) {
-      PlayerEntity player = evt.getPlayer();
+      Player player = evt.getEntity();
       DeathStorageCapability.getCapability(player).ifPresent(deathStorage -> {
-        deathStorage.getEffects().forEach(player::addPotionEffect);
+        deathStorage.getEffects().forEach(player::addEffect);
         deathStorage.clearEffects();
         deathStorage.getSettings().getEffectsSettings().getEffects().forEach(effectInstance -> {
-          EffectInstance newEffect = new EffectInstance(effectInstance.getPotion(),
+            MobEffectInstance newEffect = new MobEffectInstance(effectInstance.getEffect(),
               effectInstance.getDuration(), effectInstance.getAmplifier());
           newEffect.setCurativeItems(effectInstance.getCurativeItems());
-          player.addPotionEffect(newEffect);
+          player.addEffect(newEffect);
         });
       });
     }

@@ -19,28 +19,29 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.hunger;
 
-import java.lang.reflect.Field;
-import net.minecraft.util.FoodStats;
+import net.minecraft.world.food.FoodData;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 
+import java.lang.reflect.Field;
+
 public class HungerModule {
 
   private static final Field SATURATION_LEVEL = ObfuscationReflectionHelper
-      .findField(FoodStats.class, "field_75125_b");
+      .findField(FoodData.class, "field_75125_b");
   private static final Field EXHAUSTION_LEVEL = ObfuscationReflectionHelper
-      .findField(FoodStats.class, "field_75126_c");
+      .findField(FoodData.class, "field_75126_c");
 
   @SubscribeEvent
   public void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
-      DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(deathStorage -> {
-        FoodStats stats = evt.getPlayer().getFoodStats();
-        FoodStats oldStats = evt.getOriginal().getFoodStats();
+      DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(deathStorage -> {
+        FoodData stats = evt.getOriginal().getFoodData();
+        FoodData oldStats = evt.getOriginal().getFoodData();
         HungerSetting setting = deathStorage.getSettings().getHungerSettings();
         int minFood = setting.getMinFood();
         int maxFood = setting.getMaxFood();
