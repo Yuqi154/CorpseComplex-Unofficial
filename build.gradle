@@ -22,7 +22,7 @@ archivesBaseName = "${mod_id}-forge"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: "${version_mcp}".toString()
+    mappings channel: 'offical', version: "${version_mc}".toString()
 
     runs {
         client {
@@ -73,8 +73,8 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${version_forge}"
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${version_curios}")
-    compileOnly fg.deobf("curse.maven:cosmeticarmorreworked-237307:3056451")
-    implementation fg.deobf("curse.maven:toolbelt-260262:3086049")
+    compileOnly fg.deobf("curse.maven:cosmeticarmorreworked-237307:4600191")
+    compileOnly fg.deobf("curse.maven:tool-belt-260262:5393183")
 //  compile fg.deobf('curse.maven:obfuscate-289380:3740120')
 }
 
@@ -120,7 +120,7 @@ processResources {
     exclude('META-INF/mods.toml')
     configure { finalizedBy(replaceResources) }
 }
-
+/*
 curseforge {
 
     project {
@@ -146,3 +146,4 @@ modrinth {
     additionalFiles = [sourcesJar]
     gameVersions = "${release_versions}".split(",") as List<String>
 }
+*/
