@@ -87,7 +87,7 @@ public class DeathOverrideManager {
           .parseItems(override.cures != null ? override.cures : CorpseComplexConfig.cures).keySet()
           .stream().map(ItemStack::new).collect(Collectors.toList());
       List<MobEffectInstance> effectsConfig =
-          override.effects != null ? ConfigParser.parseEffectInstances(override.effects, cures)
+          override.effects != null ? ConfigParser.parseMobEffectInstances(override.effects, cures)
               : null;
       List<MobEffect> keepEffectsConfig =
           override.keepEffects != null ? ConfigParser.parseEffects(override.keepEffects) : null;

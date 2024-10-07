@@ -21,15 +21,14 @@ package top.theillusivec4.corpsecomplex.common.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.common.ForgeTagHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
@@ -110,7 +109,7 @@ public class InventoryHelper {
     if (!stack.isDamageableItem()) {
       return;
     }
-    LazyOptional<IEnergyStorage> energyStorage = stack.getCapability(CapabilityEnergy.ENERGY);
+    LazyOptional<IEnergyStorage> energyStorage = stack.getCapability(ForgeCapabilities.ENERGY);
 
     energyStorage.ifPresent(energy -> {
       int energyLoss = (int) Math.round(energy.getMaxEnergyStored() * durabilityLoss);
@@ -142,9 +141,8 @@ public class InventoryHelper {
     return amount;
   }
 
-  private static final Tag<Enchantment> SOULBOUND = ForgeTagHandler
-      .createOptionalTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge:soulbound"));
-
+  private static final TagKey<Enchantment> SOULBOUND = TagKey.create(
+          ForgeRegistries.ENCHANTMENTS.getRegistryKey(), new ResourceLocation("forge:soulbound"));
   private static boolean saveSoulbound(ItemStack stack) {
     int level = 0;
     Enchantment enchantment = null;

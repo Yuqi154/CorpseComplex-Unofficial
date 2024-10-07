@@ -19,20 +19,16 @@
 
 package top.theillusivec4.corpsecomplex.common.modules.mementomori;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import net.minecraft.world.block.CakeBlock;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAction;
-import net.minecraft.world.potion.EffectInstance;
-import net.minecraft.world.util.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.block.CakeBlock;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -44,6 +40,10 @@ import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect.AttributeInfo;
 import top.theillusivec4.corpsecomplex.common.registry.CorpseComplexRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MementoMoriModule {
 
@@ -98,14 +98,14 @@ public class MementoMoriModule {
 
   @SubscribeEvent
   public void playerRespawn(final PlayerRespawnEvent evt) {
-    PlayerEntity playerEntity = evt.getPlayer();
+    Player playerEntity = evt.getEntity();
 
     if (!MementoMoriEffect.ATTRIBUTES.isEmpty() || CorpseComplexConfig.SERVER.noFood.get()
         || CorpseComplexConfig.SERVER.percentXp.get() != 0) {
-      EffectInstance instance = new EffectInstance(CorpseComplexRegistry.MEMENTO_MORI,
+      MobEffectInstance instance = new MobEffectInstance(CorpseComplexRegistry.MEMENTO_MORI,
           CorpseComplexConfig.SERVER.duration.get() * 20);
       instance.setCurativeItems(CURES);
-      playerEntity.addPotionEffect(instance);
+      playerEntity.addEffect(instance);
 
       if (playerEntity.getHealth() < playerEntity.getMaxHealth()) {
         playerEntity.setHealth(playerEntity.getMaxHealth());
@@ -115,10 +115,10 @@ public class MementoMoriModule {
 
   @SubscribeEvent
   public void eatingFood(final PlayerInteractEvent.RightClickItem evt) {
-    DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(deathStorage -> {
-      if (evt.getPlayer().isPotionActive(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
+    DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
+      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
           .getSettings().getMementoMoriSettings().isNoFood()
-          && evt.getItemStack().getUseAction() == UseAction.EAT) {
+          && evt.getItemStack().getUseAnimation() == UseAnim.EAT) {
         evt.setCanceled(true);
       }
     });
@@ -126,9 +126,9 @@ public class MementoMoriModule {
 
   @SubscribeEvent
   public void eatingCake(final PlayerInteractEvent.RightClickBlock evt) {
-    DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(deathStorage -> {
-      if (evt.getPlayer().isPotionActive(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
-          .getSettings().getMementoMoriSettings().isNoFood() && evt.getWorld()
+    DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
+      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
+          .getSettings().getMementoMoriSettings().isNoFood() && evt.getLevel()
           .getBlockState(evt.getPos()).getBlock() instanceof CakeBlock) {
         evt.setCanceled(true);
       }
@@ -137,13 +137,13 @@ public class MementoMoriModule {
 
   @SubscribeEvent
   public void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
-    LivingEntity entity = evt.getEntityLiving();
+    LivingEntity entity = evt.getEntity();
 
-    if (!entity.getEntityWorld().isRemote() && entity instanceof PlayerEntity) {
-      DeathStorageCapability.getCapability((PlayerEntity) entity).ifPresent(
+    if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player) {
+      DeathStorageCapability.getCapability((Player) entity).ifPresent(
           deathStorage -> deathStorage.getSettings().getMementoMoriSettings().getMementoCures()
               .forEach(itemStack -> {
-                if (ItemStack.areItemsEqual(evt.getItem(), itemStack)) {
+                if (ItemStack.isSameItemSameTags(evt.getItem(), itemStack)) {
                   entity.curePotionEffects(evt.getItem());
                 }
               }));
@@ -152,10 +152,10 @@ public class MementoMoriModule {
 
   @SubscribeEvent
   public void playerChangeXp(final PlayerXpEvent.XpChange evt) {
-    DeathStorageCapability.getCapability(evt.getPlayer()).ifPresent(deathStorage -> {
-      PlayerEntity playerEntity = evt.getPlayer();
-      EffectInstance effectInstance = playerEntity
-          .getActivePotionEffect(CorpseComplexRegistry.MEMENTO_MORI);
+    DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
+      Player playerEntity = evt.getEntity();
+      MobEffectInstance effectInstance = playerEntity
+          .getEffect(CorpseComplexRegistry.MEMENTO_MORI);
 
       if (effectInstance != null) {
         double percentXp = deathStorage.getSettings().getMementoMoriSettings().getPercentXp();

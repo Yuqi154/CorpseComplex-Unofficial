@@ -31,18 +31,18 @@ import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.IInv
 import top.theillusivec4.corpsecomplex.common.util.Enums.InventorySection;
 import top.theillusivec4.corpsecomplex.common.util.InventoryHelper;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
 import java.util.Map;
 import java.util.UUID;
-
 public class CuriosIInventory implements IInventory {
 
   @Override
   public void storeInventory(IDeathStorage deathStorage) {
     Player Player = deathStorage.getPlayer();
     ListTag list = new ListTag();
-    CuriosApi.getCuriosHelper().getCuriosHandler(Player)
+    CuriosApi.getCuriosInventory(Player)
         .ifPresent(curioHandler -> curioHandler.getCurios().forEach((id, stackHandler) -> {
           ListTag list1 = new ListTag();
           ListTag list2 = new ListTag();
@@ -81,7 +81,7 @@ public class CuriosIInventory implements IInventory {
       ListTag list = (ListTag) oldStorage.getInventory("curios");
 
       if (list != null) {
-        CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(newHandler -> {
+        CuriosApi.getCuriosInventory(player).ifPresent(newHandler -> {
 
           for (int i = 0; i < list.size(); i++) {
             CompoundTag tag = list.getCompound(i);
@@ -110,10 +110,11 @@ public class CuriosIInventory implements IInventory {
                   if (stackHandler.getSlots() > slot &&
                       stackHandler.getStackInSlot(slot).isEmpty()) {
                     stacksHandler.getStacks().setStackInSlot(slot, itemstack);
-                    CuriosApi.getCuriosHelper().getCurio(itemstack).ifPresent((curio) -> {
+                    CuriosApi.getCurio(itemstack).ifPresent((curio) -> {
+                      SlotContext slotContext = new SlotContext(id, player, slot, false, true);
                       player.getAttributes()
-                          .addTransientAttributeModifiers(curio.getAttributeModifiers(id));
-                      curio.onEquip(id, slot, player);
+                          .addTransientAttributeModifiers(curio.getAttributeModifiers(slotContext, player.getUUID()));
+                      curio.onEquip(slotContext, curio.getStack());
                     });
                   } else {
                     ItemHandlerHelper.giveItemToPlayer(player, itemstack);

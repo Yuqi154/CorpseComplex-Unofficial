@@ -22,7 +22,7 @@ package top.theillusivec4.corpsecomplex.common.modules.hunger;
 import net.minecraft.world.food.FoodData;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 

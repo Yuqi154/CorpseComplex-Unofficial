@@ -78,7 +78,7 @@ public class MiscellaneousModule {
       DeathStorageCapability.getCapability(playerEntity).ifPresent(
           deathStorage -> deathStorage.getSettings().getMiscellaneousSettings()
               .getMobSpawnsOnDeath()
-              .forEach(mob -> spawnMob(mob, playerEntity.getPosition(1f), world)));
+              .forEach(mob -> spawnMob(mob, BlockPos.containing(playerEntity.getPosition(1f)), world)));
     }
   }
 
@@ -91,7 +91,7 @@ public class MiscellaneousModule {
 
     if (world.noCollision(type.getAABB(d0, d1, d2))) {
       CompoundTag compoundnbt = new CompoundTag();
-      compoundnbt.putString("id", Objects.requireNonNull(type.getRegistryName()).toString());
+      compoundnbt.putString("id", Objects.requireNonNull(type.getCategory().getName()));
         Entity entity = EntityType.loadEntityRecursive(compoundnbt, world, (entity1) -> {
         entity1.moveTo(d0, d1, d2, entity1.yRotO, entity1.xRotO);
         return entity1;

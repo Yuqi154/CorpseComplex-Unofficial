@@ -29,10 +29,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.DeathSettings;
@@ -219,7 +218,7 @@ public class DeathStorageCapability {
     }
   }
 
-  public static class Provider implements ICapabilitySerializable<Tag> {
+  public static class Provider implements ICapabilitySerializable<CompoundTag> {
 
     final LazyOptional<IDeathStorage> optional;
     final IDeathStorage data;
@@ -236,13 +235,21 @@ public class DeathStorageCapability {
     }
 
     @Override
-    public Tag serializeNBT() {
-      return DEATH_STORAGE_CAP.writeNBT(data, null);
+    public CompoundTag serializeNBT() {
+      // 直接调用 data 的 serializeNBT 方法
+      if (data instanceof INBTSerializable) {
+        return ((INBTSerializable<CompoundTag>) data).serializeNBT();
+      }
+      return new CompoundTag();  // 返回一个空的 NBT 标签作为默认值
     }
 
     @Override
-    public void deserializeNBT(Tag nbt) {
-      DEATH_STORAGE_CAP.readNBT(data, null, nbt);
+    public void deserializeNBT(CompoundTag nbt) {
+      // 直接调用 data 的 deserializeNBT 方法
+      if (data instanceof INBTSerializable) {
+        ((INBTSerializable<CompoundTag>) data).deserializeNBT(nbt);
+      }
     }
   }
+
 }
