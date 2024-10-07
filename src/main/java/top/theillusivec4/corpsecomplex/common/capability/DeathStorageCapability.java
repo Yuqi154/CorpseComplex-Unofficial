@@ -64,6 +64,8 @@ public class DeathStorageCapability {
   public static void register() {
 //    CapabilityManager.INSTANCE.register(IDeathStorage.class, new IStorage<IDeathStorage>() {
 //
+  }
+
 //      @Override
 //      public Tag writeNbt(Capability<IDeathStorage> capability, IDeathStorage instance,
 //          Direction side) {
@@ -101,12 +103,13 @@ public class DeathStorageCapability {
 //        instance.setDeathDamageSource(deathDamageSource);
 //      }
 //    }, DeathStorage::new);
-  }
+
 
   public static LazyOptional<IDeathStorage> getCapability(final Player playerEntity) {
     return playerEntity.getCapability(DEATH_STORAGE_CAP);
   }
 
+  @AutoRegisterCapability
   public interface IDeathStorage {
 
     Player getPlayer();
@@ -134,7 +137,7 @@ public class DeathStorageCapability {
     List<MobEffectInstance> getEffects();
   }
 
-  @AutoRegisterCapability
+  //@AutoRegisterCapability
   public static class DeathStorage implements IDeathStorage {
 
     private final Map<String, Tag> storage = new HashMap<>();
@@ -233,7 +236,10 @@ public class DeathStorageCapability {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nullable Capability<T> capability, Direction side) {
-      return DEATH_STORAGE_CAP.orEmpty(capability, optional);
+      if(DEATH_STORAGE_CAP!=null)
+        return DEATH_STORAGE_CAP.orEmpty(capability, optional);
+      else
+        return LazyOptional.empty();
     }
 
     @Override

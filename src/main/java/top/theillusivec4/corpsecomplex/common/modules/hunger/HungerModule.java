@@ -31,9 +31,9 @@ import java.lang.reflect.Field;
 public class HungerModule {
 
   private static final Field SATURATION_LEVEL = ObfuscationReflectionHelper
-      .findField(FoodData.class, "field_75125_b");
+      .findField(FoodData.class, "saturationLevel");
   private static final Field EXHAUSTION_LEVEL = ObfuscationReflectionHelper
-      .findField(FoodData.class, "field_75126_c");
+      .findField(FoodData.class, "exhaustionLevel");
 
   @SubscribeEvent
   public void playerRespawn(final PlayerEvent.Clone evt) {

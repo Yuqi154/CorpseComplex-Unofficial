@@ -15,18 +15,18 @@ ${mod_description}
 [[dependencies."${mod_id}"]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="%{forge_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies."${mod_id}"]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,1.17)"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies."${mod_id}"]]
     modId="curios"
     mandatory=false
-    versionRange="[1.16.5-4.0.6.0,)"
+    versionRange="${curios_version_range}"
     ordering="NONE"
     side="BOTH"
