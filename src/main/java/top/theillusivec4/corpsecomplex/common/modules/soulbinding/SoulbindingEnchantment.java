@@ -35,7 +35,13 @@ public class SoulbindingEnchantment extends Enchantment {
   public SoulbindingEnchantment() {
     super(Rarity.VERY_RARE, EnchantmentCategory.create("ANY", (item) -> true),
             EquipmentSlot.values());
-    this.setRegistryName(RegistryReference.SOULBINDING);
+    //this.setRegistryName(RegistryReference.SOULBINDING);
+
+  }
+
+  @Override
+  public String getDescriptionId(){
+    return RegistryReference.SOULBINDING;
   }
 
   @Nonnull
@@ -62,7 +68,7 @@ public class SoulbindingEnchantment extends Enchantment {
 
   @Override
   protected boolean checkCompatibility(Enchantment ench) {
-    ResourceLocation rl = ench.getRegistryName();
+    ResourceLocation rl = ResourceLocation.tryParse(ench.getDescriptionId());
     boolean isSoulbound = false;
 
     if (rl != null) {

@@ -61,8 +61,6 @@ public class CorpseComplex {
     createServerConfig(CorpseComplexConfig.OVERRIDES_SPEC, "overrides");
     createServerConfig(CorpseComplexConfig.ITEM_OVERRIDES_SPEC, "itemoverrides");
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-    eventBus.addListener(this::setup);
-    eventBus.addListener(this::config);
     MinecraftForge.EVENT_BUS.register(new InventoryModule());
     MinecraftForge.EVENT_BUS.register(new ExperienceModule());
     MinecraftForge.EVENT_BUS.register(new HungerModule());
@@ -70,10 +68,12 @@ public class CorpseComplex {
     MinecraftForge.EVENT_BUS.register(new MementoMoriModule());
     MinecraftForge.EVENT_BUS.register(new MiscellaneousModule());
     MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
+    eventBus.addListener(this::setup);
+    eventBus.addListener(this::config);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    DeathStorageCapability.register();
+    //DeathStorageCapability.register();
     IntegrationManager.init();
   }
 

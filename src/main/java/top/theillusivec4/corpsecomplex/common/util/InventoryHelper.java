@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -34,6 +35,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventorySetting;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventorySetting.SectionSettings;
+import top.theillusivec4.corpsecomplex.common.modules.soulbinding.SoulbindingEnchantment;
 import top.theillusivec4.corpsecomplex.common.util.Enums.DropMode;
 import top.theillusivec4.corpsecomplex.common.util.Enums.InventorySection;
 import top.theillusivec4.corpsecomplex.common.util.manager.ItemOverrideManager;
@@ -150,7 +152,7 @@ public class InventoryHelper {
     for (Map.Entry<Enchantment, Integer> enchantmentIntegerEntry : EnchantmentHelper
         .getEnchantments(stack).entrySet()) {
 
-      if (enchantmentIntegerEntry.getKey().isIn(SOULBOUND)) {
+      if (enchantmentIntegerEntry.getKey().isCompatibleWith(new SoulbindingEnchantment())) {
         level = enchantmentIntegerEntry.getValue();
         enchantment = enchantmentIntegerEntry.getKey();
         break;

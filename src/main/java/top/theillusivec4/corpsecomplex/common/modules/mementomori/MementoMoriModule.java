@@ -34,7 +34,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+//import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
@@ -50,7 +51,7 @@ public class MementoMoriModule {
   private static final List<ItemStack> CURES = new ArrayList<>();
 
   @SubscribeEvent
-  public void serverStart(final FMLServerStartedEvent evt) {
+  public void serverStart(final FMLCommonSetupEvent evt) {
 
     if (CorpseComplexConfig.SERVER.healthMod.get() != 0) {
       MementoMoriEffect.ATTRIBUTES.put(Attributes.MAX_HEALTH,
@@ -102,7 +103,7 @@ public class MementoMoriModule {
 
     if (!MementoMoriEffect.ATTRIBUTES.isEmpty() || CorpseComplexConfig.SERVER.noFood.get()
         || CorpseComplexConfig.SERVER.percentXp.get() != 0) {
-      MobEffectInstance instance = new MobEffectInstance(CorpseComplexRegistry.MEMENTO_MORI,
+      MobEffectInstance instance = new MobEffectInstance(CorpseComplexRegistry.MEMENTO_MORI.get(),
           CorpseComplexConfig.SERVER.duration.get() * 20);
       instance.setCurativeItems(CURES);
       playerEntity.addEffect(instance);
@@ -116,7 +117,7 @@ public class MementoMoriModule {
   @SubscribeEvent
   public void eatingFood(final PlayerInteractEvent.RightClickItem evt) {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
-      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
+      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI.get()) && deathStorage
           .getSettings().getMementoMoriSettings().isNoFood()
           && evt.getItemStack().getUseAnimation() == UseAnim.EAT) {
         evt.setCanceled(true);
@@ -127,7 +128,7 @@ public class MementoMoriModule {
   @SubscribeEvent
   public void eatingCake(final PlayerInteractEvent.RightClickBlock evt) {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
-      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI) && deathStorage
+      if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI.get()) && deathStorage
           .getSettings().getMementoMoriSettings().isNoFood() && evt.getLevel()
           .getBlockState(evt.getPos()).getBlock() instanceof CakeBlock) {
         evt.setCanceled(true);
@@ -155,7 +156,7 @@ public class MementoMoriModule {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
       Player playerEntity = evt.getEntity();
       MobEffectInstance effectInstance = playerEntity
-          .getEffect(CorpseComplexRegistry.MEMENTO_MORI);
+          .getEffect(CorpseComplexRegistry.MEMENTO_MORI.get());
 
       if (effectInstance != null) {
         double percentXp = deathStorage.getSettings().getMementoMoriSettings().getPercentXp();

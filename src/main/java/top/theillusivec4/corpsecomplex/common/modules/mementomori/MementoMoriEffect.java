@@ -48,13 +48,18 @@ public class MementoMoriEffect extends MobEffect {
 
   public MementoMoriEffect() {
     super(MobEffectCategory.HARMFUL, 0);
-    this.setRegistryName(RegistryReference.MEMENTO_MORI);
+    //this.setRegistryName(RegistryReference.MEMENTO_MORI);
+  }
+
+  @Override
+  public String getDescriptionId(){
+    return RegistryReference.SOULBINDING;
   }
 
   @Override
   public void applyEffectTick(@Nonnull LivingEntity entityLivingBaseIn, int amplifier) {
     MobEffectInstance effect = entityLivingBaseIn
-        .getEffect(CorpseComplexRegistry.MEMENTO_MORI);
+        .getEffect(CorpseComplexRegistry.MEMENTO_MORI.get());
 
     if (effect != null) {
       int duration = effect.getDuration();
