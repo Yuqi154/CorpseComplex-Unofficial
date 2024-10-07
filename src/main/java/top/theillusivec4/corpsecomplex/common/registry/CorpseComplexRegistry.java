@@ -21,20 +21,25 @@ package top.theillusivec4.corpsecomplex.common.registry;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.registries.ObjectHolder;
-import top.theillusivec4.corpsecomplex.CorpseComplex;
 
-@ObjectHolder(CorpseComplex.MODID)
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
+import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect;
+import top.theillusivec4.corpsecomplex.common.modules.soulbinding.SoulbindingEnchantment;
+
 public class CorpseComplexRegistry {
 
-  @ObjectHolder(RegistryReference.MEMENTO_MORI)
-  public static final MobEffect MEMENTO_MORI;
+  private static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, CorpseComplex.MODID);
 
-  @ObjectHolder(RegistryReference.SOULBINDING)
-  public static final Enchantment SOULBINDING;
+  public static final RegistryObject<MobEffect> MEMENTO_MORI = MOB_EFFECTS.register(RegistryReference.SOULBINDING, MementoMoriEffect::new);
 
-  static {
-    MEMENTO_MORI = null;
-    SOULBINDING = null;
-  }
+  private static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, CorpseComplex.MODID);
+
+  public static final RegistryObject<Enchantment> SOULBINDING = ENCHANTMENTS.register(RegistryReference.SOULBINDING, SoulbindingEnchantment::new);
+
+//  @ObjectHolder(RegistryReference.SOULBINDING)
+//  public static final Enchantment SOULBINDING;
+
 }

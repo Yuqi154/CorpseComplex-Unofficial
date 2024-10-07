@@ -73,7 +73,7 @@ public class CorpseComplex {
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
-    DeathStorageCapability.register();
+    //DeathStorageCapability.register();
     IntegrationManager.init();
   }
 
