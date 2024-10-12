@@ -23,14 +23,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability.IDeathStorage;
 import top.theillusivec4.corpsecomplex.common.util.Enums.XpDropMode;
-
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ExperienceModule {
 
   @SubscribeEvent
-  public void playerXpDrop(final LivingExperienceDropEvent evt) {
+  public static void playerXpDrop(final LivingExperienceDropEvent evt) {
 
     if (evt.getEntity() instanceof Player) {
       Player player = (Player) evt.getEntity();
@@ -57,7 +59,7 @@ public class ExperienceModule {
   }
 
   @SubscribeEvent
-  public void playerRespawn(final PlayerEvent.Clone evt) {
+  public static void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
       Player playerEntity = evt.getOriginal();

@@ -21,10 +21,6 @@ package top.theillusivec4.corpsecomplex.common.modules.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
-//import net.minecraft.entity.item.ItemEntity;
-//import net.minecraft.entity.player.PlayerEntity;
-//import net.minecraft.world.GameRules;
-//import net.minecraft.world.World;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -35,10 +31,13 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.IInventory;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.inventories.VanillaInventory;
 
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InventoryModule {
 
   public static final List<IInventory> STORAGE = new ArrayList<>();
@@ -48,7 +47,7 @@ public class InventoryModule {
   }
 
   @SubscribeEvent(priority = EventPriority.LOW)
-  public void playerDrops(final LivingDropsEvent evt) {
+  public static void playerDrops(final LivingDropsEvent evt) {
 
     if (!(evt.getEntity() instanceof Player)) {
       return;
@@ -66,7 +65,7 @@ public class InventoryModule {
   }
 
   @SubscribeEvent(priority = EventPriority.HIGH)
-  public void playerDeath(final LivingDeathEvent evt) {
+  public static void playerDeath(final LivingDeathEvent evt) {
 
     if (!(evt.getEntity() instanceof Player)) {
       return;
@@ -81,7 +80,7 @@ public class InventoryModule {
   }
 
   @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-  public void canceledDeath(final LivingDeathEvent evt) {
+  public static void canceledDeath(final LivingDeathEvent evt) {
 
     if (!(evt.getEntity() instanceof Player) || !evt.isCanceled()) {
       return;
@@ -98,7 +97,7 @@ public class InventoryModule {
   }
 
   @SubscribeEvent(priority = EventPriority.LOW)
-  public void playerRespawn(final PlayerEvent.Clone evt) {
+  public static void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
       Player original = evt.getOriginal();

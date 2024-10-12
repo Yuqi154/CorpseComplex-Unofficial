@@ -22,12 +22,14 @@ package top.theillusivec4.corpsecomplex.common.modules.hunger;
 import net.minecraft.world.food.FoodData;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 
 import java.lang.reflect.Field;
 
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class HungerModule {
 
   private static final Field SATURATION_LEVEL = ObfuscationReflectionHelper
@@ -36,7 +38,7 @@ public class HungerModule {
       .findField(FoodData.class, "f_38698_");
 
   @SubscribeEvent
-  public void playerRespawn(final PlayerEvent.Clone evt) {
+  public static void playerRespawn(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
       DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(deathStorage -> {

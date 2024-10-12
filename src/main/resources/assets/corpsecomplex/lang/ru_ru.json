@@ -1,5 +1,6 @@
 {
   "effect.corpsecomplex.memento_mori": "Memento Mori",
   "enchantment.corpsecomplex.soulbinding": "Привязка души",
-  "enchantment.corpsecomplex.soulbinding.desc": "Избавляет предмет от выпадения при смерти"
+  "enchantment.corpsecomplex.soulbinding.desc": "Избавляет предмет от выпадения при смерти",
+  "item.corpsecomplex.scroll": "Могильный свиток"
 }

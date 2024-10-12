@@ -35,8 +35,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 //import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect.AttributeInfo;
@@ -46,12 +48,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MementoMoriModule {
 
   private static final List<ItemStack> CURES = new ArrayList<>();
 
   @SubscribeEvent
-  public void serverStart(final FMLCommonSetupEvent evt) {
+  public static void serverStart(final FMLCommonSetupEvent evt) {
 
     if (CorpseComplexConfig.SERVER.healthMod.get() != 0) {
       MementoMoriEffect.ATTRIBUTES.put(Attributes.MAX_HEALTH,
@@ -98,7 +101,7 @@ public class MementoMoriModule {
   }
 
   @SubscribeEvent
-  public void playerRespawn(final PlayerRespawnEvent evt) {
+  public static void playerRespawn(final PlayerRespawnEvent evt) {
     Player playerEntity = evt.getEntity();
 
     if (!MementoMoriEffect.ATTRIBUTES.isEmpty() || CorpseComplexConfig.SERVER.noFood.get()
@@ -115,7 +118,7 @@ public class MementoMoriModule {
   }
 
   @SubscribeEvent
-  public void eatingFood(final PlayerInteractEvent.RightClickItem evt) {
+  public static void eatingFood(final PlayerInteractEvent.RightClickItem evt) {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
       if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI.get()) && deathStorage
           .getSettings().getMementoMoriSettings().isNoFood()
@@ -126,7 +129,7 @@ public class MementoMoriModule {
   }
 
   @SubscribeEvent
-  public void eatingCake(final PlayerInteractEvent.RightClickBlock evt) {
+  public static void eatingCake(final PlayerInteractEvent.RightClickBlock evt) {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
       if (evt.getEntity().hasEffect(CorpseComplexRegistry.MEMENTO_MORI.get()) && deathStorage
           .getSettings().getMementoMoriSettings().isNoFood() && evt.getLevel()
@@ -137,7 +140,7 @@ public class MementoMoriModule {
   }
 
   @SubscribeEvent
-  public void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
+  public static void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
     LivingEntity entity = evt.getEntity();
 
     if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player) {
@@ -152,7 +155,7 @@ public class MementoMoriModule {
   }
 
   @SubscribeEvent
-  public void playerChangeXp(final PlayerXpEvent.XpChange evt) {
+  public static void playerChangeXp(final PlayerXpEvent.XpChange evt) {
     DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
       Player playerEntity = evt.getEntity();
       MobEffectInstance effectInstance = playerEntity

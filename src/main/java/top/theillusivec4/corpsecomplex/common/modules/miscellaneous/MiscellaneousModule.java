@@ -32,16 +32,19 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSetSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemHandlerHelper;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
 
 import java.util.Objects;
 
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MiscellaneousModule {
 
   @SubscribeEvent
-  public void setSpawn(final PlayerSetSpawnEvent evt) {
+  public static void setSpawn(final PlayerSetSpawnEvent evt) {
 
     if (!evt.getEntity().getCommandSenderWorld().isClientSide) {
       DeathStorageCapability.getCapability(evt.getEntity()).ifPresent(deathStorage -> {
@@ -53,7 +56,7 @@ public class MiscellaneousModule {
   }
 
   @SubscribeEvent
-  public void playerRespawn(final PlayerRespawnEvent evt) {
+  public static void playerRespawn(final PlayerRespawnEvent evt) {
     Player player = evt.getEntity();
 
     DeathStorageCapability.getCapability(player).ifPresent(
@@ -66,7 +69,7 @@ public class MiscellaneousModule {
   }
 
   @SubscribeEvent
-  public void playerDeath(final LivingDeathEvent evt) {
+  public static void playerDeath(final LivingDeathEvent evt) {
 
     if (!(evt.getEntity() instanceof Player)) {
       return;

@@ -19,13 +19,20 @@
 
 package top.theillusivec4.corpsecomplex.common.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
+import top.theillusivec4.corpsecomplex.common.item.ScrollItem;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect;
 import top.theillusivec4.corpsecomplex.common.modules.soulbinding.SoulbindingEnchantment;
 @SuppressWarnings("unused")
@@ -39,7 +46,27 @@ public class CorpseComplexRegistry {
 
   public static final RegistryObject<Enchantment> SOULBINDING = ENCHANTMENTS.register("soulbinding", SoulbindingEnchantment::new);
 
-//  @ObjectHolder(RegistryReference.SOULBINDING)
-//  public static final Enchantment SOULBINDING;
+  public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, CorpseComplex.MODID);
 
+  public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", ScrollItem::new);
+
+  public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CorpseComplex.MODID);
+
+  public static final RegistryObject<CreativeModeTab> VENDING_MACHINE = TABS.register("corpsecomplex",
+          () -> CreativeModeTab
+                  .builder()
+                  .title(Component.translatable("creativetab.corpsecomplex.corpsecomplex"))
+                  .icon(() -> new ItemStack(SCROLL.get()))
+                  .displayItems((parameters, output)->{
+                    output.accept(SCROLL.get());
+                  })
+                  .build()
+  );
+
+  public static void register(IEventBus eventBus){
+    ITEMS.register(eventBus);
+    ENCHANTMENTS.register(eventBus);
+    MOB_EFFECTS.register(eventBus);
+    TABS.register(eventBus);
+  }
 }

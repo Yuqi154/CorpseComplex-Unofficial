@@ -30,15 +30,18 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.capability.DeathStorageCapability;
 import top.theillusivec4.corpsecomplex.common.util.Enums.PermissionMode;
 
 import java.util.List;
 
+@Mod.EventBusSubscriber(modid = CorpseComplex.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EffectsModule {
 
   @SubscribeEvent
-  public void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
+  public static void finishItemUse(LivingEntityUseItemEvent.Finish evt) {
     LivingEntity entity = evt.getEntity();
 
     if (!entity.getCommandSenderWorld().isClientSide && entity instanceof Player) {
@@ -53,7 +56,7 @@ public class EffectsModule {
   }
 
   @SubscribeEvent
-  public void playerDeath(final LivingDeathEvent evt) {
+  public static void playerDeath(final LivingDeathEvent evt) {
 
     if (!(evt.getEntity() instanceof Player)) {
       return;
@@ -82,7 +85,7 @@ public class EffectsModule {
   }
 
   @SubscribeEvent
-  public void playerClone(final PlayerEvent.Clone evt) {
+  public static void playerClone(final PlayerEvent.Clone evt) {
 
     if (evt.isWasDeath()) {
       DeathStorageCapability.getCapability(evt.getOriginal()).ifPresent(
@@ -93,7 +96,7 @@ public class EffectsModule {
   }
 
   @SubscribeEvent
-  public void playerRespawn(final PlayerRespawnEvent evt) {
+  public static void playerRespawn(final PlayerRespawnEvent evt) {
 
     if (!evt.isEndConquered()) {
       Player player = evt.getEntity();
