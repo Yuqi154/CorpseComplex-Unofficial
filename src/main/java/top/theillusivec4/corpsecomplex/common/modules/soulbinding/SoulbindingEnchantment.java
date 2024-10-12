@@ -26,22 +26,14 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.Enchantments;
 import top.theillusivec4.corpsecomplex.common.config.CorpseComplexConfig;
-import top.theillusivec4.corpsecomplex.common.registry.RegistryReference;
 
 import javax.annotation.Nonnull;
 
 public class SoulbindingEnchantment extends Enchantment {
+  private static final EnchantmentCategory category = EnchantmentCategory.create("Any", (item) -> true);
 
   public SoulbindingEnchantment() {
-    super(Rarity.VERY_RARE, EnchantmentCategory.create("ANY", (item) -> true),
-            EquipmentSlot.values());
-    //this.setRegistryName(RegistryReference.SOULBINDING);
-
-  }
-
-  @Override
-  public String getDescriptionId(){
-    return RegistryReference.SOULBINDING;
+    super(Rarity.VERY_RARE, category, EquipmentSlot.values());
   }
 
   @Nonnull

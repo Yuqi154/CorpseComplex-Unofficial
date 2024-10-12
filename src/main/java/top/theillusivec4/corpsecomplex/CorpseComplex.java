@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Objects;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +46,7 @@ import top.theillusivec4.corpsecomplex.common.modules.hunger.HungerModule;
 import top.theillusivec4.corpsecomplex.common.modules.inventory.InventoryModule;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriModule;
 import top.theillusivec4.corpsecomplex.common.modules.miscellaneous.MiscellaneousModule;
+import top.theillusivec4.corpsecomplex.common.registry.CorpseComplexRegistry;
 import top.theillusivec4.corpsecomplex.common.util.integration.IntegrationManager;
 import top.theillusivec4.corpsecomplex.common.util.manager.DeathConditionManager;
 import top.theillusivec4.corpsecomplex.common.util.manager.DeathOverrideManager;
@@ -70,7 +72,11 @@ public class CorpseComplex {
     MinecraftForge.EVENT_BUS.register(new CommonEventHandler());
     eventBus.addListener(this::setup);
     eventBus.addListener(this::config);
+
+    CorpseComplexRegistry.ENCHANTMENTS.register(eventBus);
+    CorpseComplexRegistry.MOB_EFFECTS.register(eventBus);
   }
+
 
   private void setup(final FMLCommonSetupEvent evt) {
     //DeathStorageCapability.register();

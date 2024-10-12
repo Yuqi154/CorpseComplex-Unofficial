@@ -14,7 +14,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with Corpse Complex.  If not, see <https://www.gnu.org/licenses/>.
+ * License along with Corpse Complex.  If not, see <https:www.gnu.org/licenses/>.
  */
 
 package top.theillusivec4.corpsecomplex.common.capability;
@@ -28,10 +28,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.AutoRegisterCapability;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
@@ -48,62 +45,13 @@ import java.util.Map;
 
 public class DeathStorageCapability {
 
-  //@CapabilityInject(IDeathStorage.class)
-  public static final Capability<IDeathStorage> DEATH_STORAGE_CAP;
+  // @CapabilityInject(IDeathStorage.class)
+  public static final Capability<IDeathStorage> DEATH_STORAGE_CAP = CapabilityManager.get(new CapabilityToken<>(){});
 
-  public static final ResourceLocation ID = new ResourceLocation(CorpseComplex.MODID,
-      "death_storage");
+  public static final ResourceLocation ID = new ResourceLocation(CorpseComplex.MODID, "death_storage");
 
   private static final String INVENTORIES = "Inventories";
   private static final String EFFECTS = "Effects";
-
-  static {
-    DEATH_STORAGE_CAP = null;
-  }
-
-  public static void register() {
-//    CapabilityManager.INSTANCE.register(IDeathStorage.class, new IStorage<IDeathStorage>() {
-//
-  }
-
-//      @Override
-//      public Tag writeNbt(Capability<IDeathStorage> capability, IDeathStorage instance,
-//          Direction side) {
-//        CompoundTag compound = new CompoundTag();
-//        CompoundTag inventories = new CompoundTag();
-//        instance.getDeathInventory().forEach(inventories::put);
-//        compound.put(INVENTORIES, inventories);
-//        ListTag effects = new ListTag();
-//        instance.getEffects().forEach(effectInstance -> {
-//          CompoundTag effect = new CompoundTag();
-//          effectInstance.save(effect);
-//          effects.add(effect);
-//        });
-//        compound.put(EFFECTS, effects);
-//        DeathInfo info = instance.getDeathInfo();
-//        if (info != null) {
-//          info.write(compound);
-//        }
-//        return compound;
-//      }
-//
-//      @Override
-//      public void readNBT(Capability<IDeathStorage> capability, IDeathStorage instance,
-//          Direction side, Tag nbt) {
-//        CompoundTag compound = (CompoundTag) nbt;
-//        CompoundTag inventories = compound.getCompound(INVENTORIES);
-//        inventories.getAllKeys().forEach(modid -> instance.addInventory(modid, inventories.get(modid)));
-//        ListTag effects = compound.getList(EFFECTS, Tag.TAG_COMPOUND);
-//        effects.forEach(effect -> {
-//          MobEffectInstance effectInstance = MobEffectInstance.load((CompoundTag) effect);
-//          instance.addEffectInstance(effectInstance);
-//        });
-//        DeathInfo deathDamageSource = new DeathInfo();
-//        deathDamageSource.read(compound);
-//        instance.setDeathDamageSource(deathDamageSource);
-//      }
-//    }, DeathStorage::new);
-
 
   public static LazyOptional<IDeathStorage> getCapability(final Player playerEntity) {
     return playerEntity.getCapability(DEATH_STORAGE_CAP);
@@ -137,7 +85,7 @@ public class DeathStorageCapability {
     List<MobEffectInstance> getEffects();
   }
 
-  //@AutoRegisterCapability
+  @AutoRegisterCapability
   public static class DeathStorage implements IDeathStorage {
 
     private final Map<String, Tag> storage = new HashMap<>();
@@ -244,19 +192,37 @@ public class DeathStorageCapability {
 
     @Override
     public CompoundTag serializeNBT() {
-      // 直接调用 data 的 serializeNBT 方法
-      if (data instanceof INBTSerializable) {
-        return ((INBTSerializable<CompoundTag>) data).serializeNBT();
+      CompoundTag compound = new CompoundTag();
+      CompoundTag inventories = new CompoundTag();
+      data.getDeathInventory().forEach(inventories::put);
+      compound.put(INVENTORIES, inventories);
+      ListTag effects = new ListTag();
+      data.getEffects().forEach(effectInstance -> {
+        CompoundTag effect = new CompoundTag();
+        effectInstance.save(effect);
+        effects.add(effect);
+      });
+      compound.put(EFFECTS, effects);
+      DeathInfo info = data.getDeathInfo();
+      if (info != null) {
+        info.write(compound);
       }
-      return new CompoundTag();  // 返回一个空的 NBT 标签作为默认值
+      return compound;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-      // 直接调用 data 的 deserializeNBT 方法
-      if (data instanceof INBTSerializable) {
-        ((INBTSerializable<CompoundTag>) data).deserializeNBT(nbt);
-      }
+      CompoundTag compound = (CompoundTag) nbt;
+      CompoundTag inventories = compound.getCompound(INVENTORIES);
+      inventories.getAllKeys().forEach(modid -> data.addInventory(modid, inventories.get(modid)));
+      ListTag effects = compound.getList(EFFECTS, Tag.TAG_COMPOUND);
+      effects.forEach(effect -> {
+        MobEffectInstance effectInstance = MobEffectInstance.load((CompoundTag) effect);
+        data.addEffectInstance(effectInstance);
+      });
+      DeathInfo deathDamageSource = new DeathInfo();
+      deathDamageSource.read(compound);
+      data.setDeathDamageSource(deathDamageSource);
     }
   }
 

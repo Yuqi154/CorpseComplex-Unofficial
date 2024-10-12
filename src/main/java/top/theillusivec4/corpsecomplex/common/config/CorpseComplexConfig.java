@@ -584,22 +584,22 @@ public class CorpseComplexConfig {
           .translation(CONFIG_PREFIX + "extraSavePerLevel")
           .defineInRange("extraSavePerLevel", 0.0D, 0.0D, 1.0D);
       allowedOnBooks = builder.comment("Set to true to allow enchanting Soulbinding on books")
-          .translation(CONFIG_PREFIX + "allowedOnBooks").define("allowedOnBooks", false);
+          .translation(CONFIG_PREFIX + "allowedOnBooks").define("allowedOnBooks", true);
       canApplyEnchantingTable = builder
           .comment("Set to true to allow enchanting Soulbinding at the enchantment table")
           .translation(CONFIG_PREFIX + "canApplyEnchantingTable")
-          .define("canApplyEnchantingTable", false);
+          .define("canApplyEnchantingTable", true);
       maxSoulbindingLevel = builder.comment("Maximum level of the enchantment")
           .translation(CONFIG_PREFIX + "maxSoulbindingLevel")
           .defineInRange("maxSoulbindingLevel", 1, 1, 5);
       isTreasure = builder.comment("Set to true to consider as a treasure enchantment")
-          .translation(CONFIG_PREFIX + "isTreasure").define("isTreasure", false);
+          .translation(CONFIG_PREFIX + "isTreasure").define("isTreasure", true);
       isVillagerTrade =
           builder.comment("Set to true to allow this enchantment to be found in villager trades")
-              .translation(CONFIG_PREFIX + "isVillagerTrade").define("isVillagerTrade", false);
+              .translation(CONFIG_PREFIX + "isVillagerTrade").define("isVillagerTrade", true);
       isLootable =
           builder.comment("Set to true to allow this enchantment to be found in loot chests")
-              .translation(CONFIG_PREFIX + "isLootable").define("isLootable", false);
+              .translation(CONFIG_PREFIX + "isLootable").define("isLootable", true);
 
       builder.pop();
 

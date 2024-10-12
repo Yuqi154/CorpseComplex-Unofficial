@@ -52,11 +52,6 @@ public class MementoMoriEffect extends MobEffect {
   }
 
   @Override
-  public String getDescriptionId(){
-    return RegistryReference.SOULBINDING;
-  }
-
-  @Override
   public void applyEffectTick(@Nonnull LivingEntity entityLivingBaseIn, int amplifier) {
     MobEffectInstance effect = entityLivingBaseIn
         .getEffect(CorpseComplexRegistry.MEMENTO_MORI.get());
