@@ -1,7 +1,9 @@
 {
+  "creativetab.corpsecomplex.corpsecomplex": "Corpse Complex",
   "effect.corpsecomplex.memento_mori": "Memento Mori",
   "enchantment.corpsecomplex.soulbinding": "Soulbinding",
   "enchantment.corpsecomplex.soulbinding.desc": "Saves the item from being dropped on death.",
   "item.corpsecomplex.scroll": "Grave Scroll",
-  "creativetab.corpsecomplex.corpsecomplex": "Corpse Complex"
+  "tooltip.corpsecomplex.scroll": "§7Return to death location",
+  "message.corpsecomplex.death_loc_null": "You do not have a death location to return to"
 }

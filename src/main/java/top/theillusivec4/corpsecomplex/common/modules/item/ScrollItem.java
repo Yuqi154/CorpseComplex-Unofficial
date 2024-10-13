@@ -1,16 +1,17 @@
-package top.theillusivec4.corpsecomplex.common.item;
+package top.theillusivec4.corpsecomplex.common.modules.item;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,7 @@ public class ScrollItem extends Item {
         if (!level.isClientSide) {
             Optional<GlobalPos> globalPos = player.getLastDeathLocation();
             if (globalPos.isEmpty()) {
-                player.sendSystemMessage(Component.literal("没有可以返回的死亡点"));
+                player.sendSystemMessage(Component.translatable("message.corpsecomplex.death_loc_null"));
                 return InteractionResultHolder.fail(itemstack);
             }
             player.startUsingItem(hand);
@@ -57,9 +58,11 @@ public class ScrollItem extends Item {
     public UseAnim getUseAnimation(ItemStack pStack) {
         return UseAnim.BOW;
     }
+
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(@NotNull ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        pTooltipComponents.add(Component.literal("返回死亡地点"));
+    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        tooltip.add(Component.translatable("tooltip.corpsecomplex.scroll"));
     }
 
     @Override

@@ -1,6 +1,9 @@
 {
+  "creativetab.corpsecomplex.corpsecomplex": "Corpse Complex",
   "effect.corpsecomplex.memento_mori": "Memento Mori",
   "enchantment.corpsecomplex.soulbinding": "Привязка души",
   "enchantment.corpsecomplex.soulbinding.desc": "Избавляет предмет от выпадения при смерти",
-  "item.corpsecomplex.scroll": "Могильный свиток"
+  "item.corpsecomplex.scroll": "Могильный свиток",
+  "tooltip.corpsecomplex.scroll": "§7Возвращение к месту смерти",
+  "message.corpsecomplex.death_loc_null": "У вас нет места смерти, куда можно было бы вернуться"
 }

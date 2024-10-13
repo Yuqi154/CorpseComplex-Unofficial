@@ -32,9 +32,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
-import top.theillusivec4.corpsecomplex.common.item.ScrollItem;
+import top.theillusivec4.corpsecomplex.common.modules.item.ScrollItem;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect;
-import top.theillusivec4.corpsecomplex.common.modules.soulbinding.SoulbindingEnchantment;
+import top.theillusivec4.corpsecomplex.common.modules.enchantment.SoulbindingEnchantment;
 @SuppressWarnings("unused")
 public class CorpseComplexRegistry {
 

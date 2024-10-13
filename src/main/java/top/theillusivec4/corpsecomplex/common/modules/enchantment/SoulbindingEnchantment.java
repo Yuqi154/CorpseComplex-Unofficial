@@ -17,7 +17,7 @@
  * License along with Corpse Complex.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.theillusivec4.corpsecomplex.common.modules.soulbinding;
+package top.theillusivec4.corpsecomplex.common.modules.enchantment;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;

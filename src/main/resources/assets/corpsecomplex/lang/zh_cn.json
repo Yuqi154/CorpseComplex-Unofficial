@@ -1,6 +1,9 @@
 {
+  "creativetab.corpsecomplex.corpsecomplex": "Corpse Complex",
   "effect.corpsecomplex.memento_mori": "死亡警告",
   "enchantment.corpsecomplex.soulbinding": "灵魂绑定",
   "enchantment.corpsecomplex.soulbinding.desc": "该附魔使物品免于死亡掉落",
-  "item.corpsecomplex.scroll": "坟墓卷轴"
+  "item.corpsecomplex.scroll": "坟墓卷轴",
+  "tooltip.corpsecomplex.scroll": "§7返回死亡地点",
+  "message.corpsecomplex.death_loc_null": "你没有可以返回的死亡点"
 }
