@@ -38,16 +38,17 @@ public class ScrollItem extends Item {
     }
 
     @Override
-    public void releaseUsing(ItemStack itemStack, Level level, LivingEntity entityLiving, int pTimeLeft){
+    public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity entityLiving){
         if (!level.isClientSide && entityLiving instanceof ServerPlayer player){
             Optional<GlobalPos> globalPos = player.getLastDeathLocation();
             if (globalPos.isPresent()){
                 BlockPos blockPos = globalPos.get().pos();
                 player.teleportTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 player.getCooldowns().addCooldown(this, 20);
-                itemStack.shrink(1);
+                if (!player.isCreative()) itemStack.shrink(1);
             }
         }
+        return itemStack;
     }
 
     @Override
