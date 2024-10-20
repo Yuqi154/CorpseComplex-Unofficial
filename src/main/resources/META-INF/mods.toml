@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[34,)"
+loaderVersion="[47,)"
 issueTrackerURL="https://github.com/MCTeamPotato/CorpseComplex-Unofficial/issues"
 license="${mod_license}"
 logoFile="${mod_icon}"

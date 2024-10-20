@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.DeathSettings;
@@ -191,7 +190,7 @@ public class DeathStorageCapability {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+      public CompoundTag serializeNBT() {
       CompoundTag compound = new CompoundTag();
       CompoundTag inventories = new CompoundTag();
       data.getDeathInventory().forEach(inventories::put);
@@ -212,7 +211,7 @@ public class DeathStorageCapability {
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-      CompoundTag compound = (CompoundTag) nbt;
+      CompoundTag compound = nbt;
       CompoundTag inventories = compound.getCompound(INVENTORIES);
       inventories.getAllKeys().forEach(modid -> data.addInventory(modid, inventories.get(modid)));
       ListTag effects = compound.getList(EFFECTS, Tag.TAG_COMPOUND);

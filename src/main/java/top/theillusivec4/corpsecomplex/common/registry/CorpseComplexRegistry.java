@@ -35,38 +35,39 @@ import top.theillusivec4.corpsecomplex.CorpseComplex;
 import top.theillusivec4.corpsecomplex.common.modules.item.ScrollItem;
 import top.theillusivec4.corpsecomplex.common.modules.mementomori.MementoMoriEffect;
 import top.theillusivec4.corpsecomplex.common.modules.enchantment.SoulbindingEnchantment;
+
 @SuppressWarnings("unused")
 public class CorpseComplexRegistry {
 
-  public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, CorpseComplex.MODID);
+    public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, CorpseComplex.MODID);
 
-  public static final RegistryObject<MobEffect> MEMENTO_MORI = MOB_EFFECTS.register("memento_mori", MementoMoriEffect::new);
+    public static final RegistryObject<MobEffect> MEMENTO_MORI = MOB_EFFECTS.register("memento_mori", MementoMoriEffect::new);
 
-  public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, CorpseComplex.MODID);
+    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, CorpseComplex.MODID);
 
-  public static final RegistryObject<Enchantment> SOULBINDING = ENCHANTMENTS.register("soulbinding", SoulbindingEnchantment::new);
+    public static final RegistryObject<Enchantment> SOULBINDING = ENCHANTMENTS.register("soulbinding", SoulbindingEnchantment::new);
 
-  public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, CorpseComplex.MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, CorpseComplex.MODID);
 
-  public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", ScrollItem::new);
+    public static final RegistryObject<Item> SCROLL = ITEMS.register("scroll", ScrollItem::new);
 
-  public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CorpseComplex.MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CorpseComplex.MODID);
 
-  public static final RegistryObject<CreativeModeTab> VENDING_MACHINE = TABS.register("corpsecomplex",
-          () -> CreativeModeTab
-                  .builder()
-                  .title(Component.translatable("creativetab.corpsecomplex.corpsecomplex"))
-                  .icon(() -> new ItemStack(SCROLL.get()))
-                  .displayItems((parameters, output)->{
-                    output.accept(SCROLL.get());
-                  })
-                  .build()
-  );
+    public static final RegistryObject<CreativeModeTab> VENDING_MACHINE = TABS.register("corpsecomplex",
+            () -> CreativeModeTab
+                    .builder()
+                    .title(Component.translatable("creativetab.corpsecomplex.corpsecomplex"))
+                    .icon(() -> new ItemStack(SCROLL.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(SCROLL.get());
+                    })
+                    .build()
+    );
 
-  public static void register(IEventBus eventBus){
-    ITEMS.register(eventBus);
-    ENCHANTMENTS.register(eventBus);
-    MOB_EFFECTS.register(eventBus);
-    TABS.register(eventBus);
-  }
+    public static void register(IEventBus eventBus) {
+        ITEMS.register(eventBus);
+        ENCHANTMENTS.register(eventBus);
+        MOB_EFFECTS.register(eventBus);
+        TABS.register(eventBus);
+    }
 }
